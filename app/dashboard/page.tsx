@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, RefreshCw } from 'lucide-react'
+import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, RefreshCw, TrendingUp, Repeat, Bell, Settings, HelpCircle } from 'lucide-react'
 import Link from 'next/link'
 
 interface Transaction {
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [hasCard, setHasCard] = useState<boolean>(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [unreadNotifications, setUnreadNotifications] = useState<number>(3)
 
   useEffect(() => {
     // Simulate loading wallet data
@@ -95,9 +96,28 @@ export default function Dashboard() {
               <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <button className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                Settings
-              </button>
+              <Link href="/investment" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                <TrendingUp className="h-5 w-5 inline mr-1" />
+                Invest
+              </Link>
+              <Link href="/exchange" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                <Repeat className="h-5 w-5 inline mr-1" />
+                Exchange
+              </Link>
+              <Link href="/support" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                <HelpCircle className="h-5 w-5 inline" />
+              </Link>
+              <Link href="/settings" className="relative">
+                <Bell className="h-6 w-6 text-gray-700 hover:text-blue-600" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </Link>
+              <Link href="/settings">
+                <Settings className="h-6 w-6 text-gray-700 hover:text-blue-600" />
+              </Link>
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
                 U
               </div>
@@ -110,7 +130,51 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Welcome to DEO Finance</h1>
-          <p className="text-gray-600 mt-2">Manage your USDC wallet and financial services</p>
+          <p className="text-gray-600 mt-2">Manage your USDC wallet and comprehensive financial services</p>
+        </div>
+
+        {/* Quick Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Portfolio Value</p>
+                <p className="text-2xl font-bold text-gray-900">$28,500</p>
+                <p className="text-sm text-green-600">+7.14%</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-green-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Monthly Spending</p>
+                <p className="text-2xl font-bold text-gray-900">$1,250</p>
+                <p className="text-sm text-gray-500">Via DEO Card</p>
+              </div>
+              <CreditCard className="h-8 w-8 text-blue-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Exchanged</p>
+                <p className="text-2xl font-bold text-gray-900">$2,500</p>
+                <p className="text-sm text-gray-500">This month</p>
+              </div>
+              <Repeat className="h-8 w-8 text-purple-600" />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Services</p>
+                <p className="text-2xl font-bold text-gray-900">8</p>
+                <p className="text-sm text-gray-500">All operational</p>
+              </div>
+              <Shield className="h-8 w-8 text-green-600" />
+            </div>
+          </div>
         </div>
 
         {/* Main Grid */}
