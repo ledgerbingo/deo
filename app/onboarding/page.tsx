@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { DollarSign, CheckCircle, Circle, Shield, Wallet, Sparkles, ArrowRight } from 'lucide-react'
+import { DollarSign, CheckCircle, Shield, Wallet, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Button, Stepper, Badge } from '@/components/ui'
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -10,27 +11,23 @@ export default function OnboardingPage() {
   const steps = [
     {
       id: 'welcome',
-      title: 'Welcome to DEO Finance',
-      description: 'Your gateway to modern financial services',
-      completed: true,
+      title: 'Welcome',
+      description: 'Get started',
     },
     {
       id: 'kyc',
-      title: 'Identity Verification',
-      description: 'Complete KYC to unlock all features',
-      completed: false,
+      title: 'Verify Identity',
+      description: 'Complete KYC',
     },
     {
       id: 'wallet',
       title: 'Create Wallet',
-      description: 'Set up your USDC wallet',
-      completed: false,
+      description: 'Setup USDC wallet',
     },
     {
       id: 'explore',
-      title: 'Explore Features',
-      description: 'Discover what you can do',
-      completed: false,
+      title: 'Explore',
+      description: 'Discover features',
     },
   ]
 
@@ -66,9 +63,9 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link href="/" className="flex items-center">
             <DollarSign className="h-8 w-8 text-blue-600" />
@@ -78,41 +75,15 @@ export default function OnboardingPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-12">
-        {/* Progress Steps */}
+        {/* Progress Stepper */}
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex-1 relative">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                      step.completed
-                        ? 'bg-green-600 text-white'
-                        : currentStep === index
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-300 text-gray-600'
-                    }`}
-                  >
-                    {step.completed ? (
-                      <CheckCircle className="h-6 w-6" />
-                    ) : (
-                      <Circle className="h-6 w-6" />
-                    )}
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-gray-900 text-center">
-                    {step.title}
-                  </p>
-                </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`absolute top-6 left-1/2 w-full h-1 ${
-                      step.completed ? 'bg-green-600' : 'bg-gray-300'
-                    }`}
-                  ></div>
-                )}
-              </div>
-            ))}
-          </div>
+          <Stepper 
+            steps={steps} 
+            currentStep={currentStep}
+            onStepClick={(index) => {
+              if (index < currentStep) setCurrentStep(index)
+            }}
+          />
         </div>
 
         {/* Welcome Section */}
@@ -142,121 +113,132 @@ export default function OnboardingPage() {
             </div>
 
             <div className="flex justify-center">
-              <button
+              <Button
                 onClick={() => setCurrentStep(1)}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                variant="primary"
+                size="lg"
               >
                 Get Started <ArrowRight className="h-5 w-5" />
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {/* KYC Step */}
         {currentStep === 1 && (
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
             <div className="text-center mb-8">
-              <Shield className="h-16 w-16 text-purple-600 mx-auto mb-4" />
+              <div className="inline-flex p-4 bg-purple-100 rounded-full mb-4">
+                <Shield className="h-12 w-12 text-purple-600" />
+              </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
                 Identity Verification
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-gray-600 mb-4">
                 Complete your KYC verification to unlock all features of DEO Finance.
-                This process is secure and powered by Stripe Identity.
               </p>
+              <Badge variant="info" size="lg">Powered by Stripe Identity</Badge>
             </div>
 
-            <div className="bg-purple-50 rounded-lg p-6 mb-8">
+            <div className="bg-purple-50 rounded-xl p-6 mb-8 border border-purple-100">
               <h3 className="font-semibold text-gray-900 mb-4">What you'll need:</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>Government-issued photo ID (passport, driver's license, or ID card)</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>A device with a camera for document upload</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>5-10 minutes to complete the process</span>
                 </li>
               </ul>
             </div>
 
             <div className="flex gap-4 justify-center">
-              <button
+              <Button
                 onClick={() => setCurrentStep(0)}
-                className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50"
+                variant="ghost"
               >
+                <ArrowLeft className="h-5 w-5" />
                 Back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleStartKYC}
-                className="bg-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                variant="primary"
+                size="lg"
+                className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
               >
                 Start Verification
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {/* Wallet Step */}
         {currentStep === 2 && (
-          <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
             <div className="text-center mb-8">
-              <Wallet className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+              <div className="inline-flex p-4 bg-blue-100 rounded-full mb-4">
+                <Wallet className="h-12 w-12 text-blue-600" />
+              </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
                 Create Your Wallet
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Set up your USDC wallet on the Circle ARC blockchain. Your wallet will be secured with account abstraction technology.
+              <p className="text-lg text-gray-600 mb-4">
+                Set up your USDC wallet on the Circle ARC blockchain.
               </p>
+              <Badge variant="info" size="lg">Account Abstraction Technology</Badge>
             </div>
 
-            <div className="bg-blue-50 rounded-lg p-6 mb-8">
+            <div className="bg-blue-50 rounded-xl p-6 mb-8 border border-blue-100">
               <h3 className="font-semibold text-gray-900 mb-4">Your wallet includes:</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>USDC stablecoin support (1:1 with USD)</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>Low transaction fees on ARC blockchain</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>Account abstraction for enhanced security</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
                   <span>Instant transfers and real-time balance</span>
                 </li>
               </ul>
             </div>
 
             <div className="flex gap-4 justify-center">
-              <button
+              <Button
                 onClick={() => setCurrentStep(1)}
-                className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50"
+                variant="ghost"
               >
+                <ArrowLeft className="h-5 w-5" />
                 Back
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCreateWallet}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                variant="primary"
+                size="lg"
               >
                 Create Wallet
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         {/* Skip Link */}
         <div className="text-center mt-8">
-          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700">
-            Skip onboarding and go to dashboard
+          <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 font-medium">
+            Skip onboarding and go to dashboard →
           </Link>
         </div>
       </main>
