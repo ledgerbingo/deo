@@ -22,9 +22,17 @@ export class ExchangeService {
       'USD-EUR': 0.92,
       'USD-GBP': 0.79,
       'USD-JPY': 149.50,
+      'USD-USDC': 1.0,
       'USDC-USD': 1.0,
       'EUR-USD': 1.09,
+      'EUR-GBP': 0.86,
+      'EUR-JPY': 163.04,
       'GBP-USD': 1.27,
+      'GBP-EUR': 1.16,
+      'GBP-JPY': 189.24,
+      'JPY-USD': 0.0067,
+      'JPY-EUR': 0.0061,
+      'JPY-GBP': 0.0053,
     };
 
     const key = `${from}-${to}`;
