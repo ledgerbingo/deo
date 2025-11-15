@@ -95,7 +95,7 @@ To deploy to Vercel, add these environment variables:
 
 ```bash
 # Circle ARC Blockchain
-NEXT_PUBLIC_ARC_TESTNET_RPC=https://arc-testnet-rpc.circle.com
+NEXT_PUBLIC_ARC_TESTNET_RPC=https://rpc.testnet.arc.network
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key

@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ethers } from 'ethers'
 
 // ARC Testnet RPC URL
-const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://arc-testnet-rpc.circle.com'
+const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://rpc.testnet.arc.network'
 
-// USDC contract address on ARC testnet (example - replace with actual)
-const USDC_CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+// USDC contract address on ARC testnet
+const USDC_CONTRACT_ADDRESS = '0x3600000000000000000000000000000000000000'
 
 // USDC ABI (simplified)
 const USDC_ABI = [

@@ -138,8 +138,9 @@ This document summarizes the complete implementation of the ARC Smart Wallet fun
 ## Technical Stack
 
 - **Blockchain Library**: ethers.js v6
-- **RPC Provider**: Circle ARC Testnet RPC
-- **Smart Contract**: USDC ERC-20 Token (0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238)
+- **RPC Provider**: Circle ARC Testnet RPC (https://rpc.testnet.arc.network)
+- **Chain ID**: 5042002 (0x4cef52)
+- **Smart Contract**: USDC ERC-20 Token (0x3600000000000000000000000000000000000000)
 - **Block Explorer**: testnet.arcscan.app
 - **Frontend**: Next.js 16, React 19, TypeScript
 - **Styling**: Tailwind CSS v4
@@ -261,13 +262,14 @@ CodeQL Analysis: 0 vulnerabilities found
 
 ### Environment Variables Required:
 ```env
-NEXT_PUBLIC_ARC_TESTNET_RPC=https://arc-testnet-rpc.circle.com
+NEXT_PUBLIC_ARC_TESTNET_RPC=https://rpc.testnet.arc.network
 ```
 
 ### Network Configuration:
-- Chain ID: Check with ARC testnet
-- USDC Contract: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+- Chain ID: 5042002 (0x4cef52)
+- USDC Contract: 0x3600000000000000000000000000000000000000
 - Block Explorer: https://testnet.arcscan.app
+- Native Currency: USDC (gas fees paid in USDC)
 
 ## Future Enhancements
 

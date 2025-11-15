@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
-const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://arc-testnet-rpc.circle.com'
-const USDC_CONTRACT_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://rpc.testnet.arc.network'
+const USDC_CONTRACT_ADDRESS = '0x3600000000000000000000000000000000000000'
 
 // ERC20 Transfer event signature
 const TRANSFER_EVENT_SIGNATURE = 'Transfer(address,address,uint256)'

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ethers } from 'ethers'
 
 // ARC Testnet RPC URL
-const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://arc-testnet-rpc.circle.com'
+const ARC_TESTNET_RPC = process.env.NEXT_PUBLIC_ARC_TESTNET_RPC || 'https://rpc.testnet.arc.network'
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       ]) as number
 
       // Get USDC balance
-      const USDC_CONTRACT = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+      const USDC_CONTRACT = '0x3600000000000000000000000000000000000000'
       const usdcAbi = [
         'function balanceOf(address account) view returns (uint256)',
         'function decimals() view returns (uint8)',

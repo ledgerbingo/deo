@@ -127,7 +127,7 @@ This ensures the UI never breaks even if APIs are unavailable.
 
 ```env
 # Circle ARC Blockchain
-NEXT_PUBLIC_ARC_TESTNET_RPC=https://arc-testnet-rpc.circle.com
+NEXT_PUBLIC_ARC_TESTNET_RPC=https://rpc.testnet.arc.network
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
