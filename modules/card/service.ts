@@ -22,6 +22,7 @@ export class CardService {
           customerId: request.userId,
           cardholderName: request.cardholderName || 'DEO User',
           isVirtual: request.type === 'virtual',
+          spendingLimit: request.spendingLimit || 5000,
         }),
       });
       
@@ -36,13 +37,13 @@ export class CardService {
         id: cardData.id,
         userId: request.userId,
         type: cardData.type,
-        status: cardData.status,
+        status: cardData.status === 'inactive' ? 'frozen' : cardData.status,
         last4: cardData.last4,
         brand: cardData.brand,
         expiryMonth: cardData.exp_month,
         expiryYear: cardData.exp_year,
-        spendingLimit: request.spendingLimit || 5000,
-        availableBalance: request.spendingLimit || 5000,
+        spendingLimit: cardData.spending_limit || request.spendingLimit || 5000,
+        availableBalance: cardData.spending_limit || request.spendingLimit || 5000,
         createdAt: new Date(),
       };
     } catch (error) {
@@ -102,14 +103,14 @@ export class CardService {
         id: cardData.id,
         userId,
         type: cardData.type,
-        status: cardData.status,
+        status: cardData.status === 'inactive' ? 'frozen' : cardData.status === 'canceled' ? 'cancelled' : cardData.status,
         last4: cardData.last4,
         brand: cardData.brand,
         expiryMonth: cardData.exp_month,
         expiryYear: cardData.exp_year,
-        spendingLimit: 5000,
-        availableBalance: 4500,
-        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        spendingLimit: cardData.spending_limit || 5000,
+        availableBalance: cardData.spending_limit || 5000,
+        createdAt: new Date(),
       }));
     } catch (error) {
       console.error('Error fetching user cards:', error);
@@ -192,7 +193,27 @@ export class CardService {
    * @returns Promise resolving to updated card
    */
   async freezeCard(cardId: string): Promise<Card> {
-    return this.updateCardStatus(cardId, 'frozen');
+    try {
+      const response = await fetch('/api/stripe/card', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardId,
+          action: 'freeze',
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to freeze card');
+      }
+      
+      return this.updateCardStatus(cardId, 'frozen');
+    } catch (error) {
+      console.error('Error freezing card:', error);
+      throw error;
+    }
   }
 
   /**
@@ -202,7 +223,27 @@ export class CardService {
    * @returns Promise resolving to updated card
    */
   async unfreezeCard(cardId: string): Promise<Card> {
-    return this.updateCardStatus(cardId, 'active');
+    try {
+      const response = await fetch('/api/stripe/card', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardId,
+          action: 'unfreeze',
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to unfreeze card');
+      }
+      
+      return this.updateCardStatus(cardId, 'active');
+    } catch (error) {
+      console.error('Error unfreezing card:', error);
+      throw error;
+    }
   }
 
   /**
@@ -212,7 +253,27 @@ export class CardService {
    * @returns Promise resolving to cancelled card
    */
   async cancelCard(cardId: string): Promise<Card> {
-    return this.updateCardStatus(cardId, 'cancelled');
+    try {
+      const response = await fetch('/api/stripe/card', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardId,
+          action: 'cancel',
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to cancel card');
+      }
+      
+      return this.updateCardStatus(cardId, 'cancelled');
+    } catch (error) {
+      console.error('Error cancelling card:', error);
+      throw error;
+    }
   }
 }
 
