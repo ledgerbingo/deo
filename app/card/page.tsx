@@ -104,26 +104,28 @@ export default function CardPage() {
   const categories = Array.from(new Set(transactions.map(tx => tx.category)))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center">
-              <DollarSign className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
+              <div className="w-10 h-10 rounded-full nubank-gradient flex items-center justify-center">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+              <span className="ml-3 text-2xl font-bold text-gray-900">DEO</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              <Link href="/dashboard" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Dashboard
               </Link>
-              <Link href="/account" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              <Link href="/account" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Account
               </Link>
-              <Link href="/investment" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              <Link href="/investment" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Invest
               </Link>
-              <Link href="/settings" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              <Link href="/settings" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
                 Settings
               </Link>
             </div>
@@ -136,9 +138,9 @@ export default function CardPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Cards</h1>
-            <p className="text-gray-600 mt-2">Manage your virtual and physical cards powered by Stripe</p>
+            <p className="text-gray-600 mt-1">Manage your virtual and physical cards</p>
           </div>
-          <Button onClick={() => setShowNewCardModal(true)} variant="primary">
+          <Button onClick={() => setShowNewCardModal(true)} className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500">
             <Plus className="h-5 w-5 mr-2" />
             Request New Card
           </Button>
@@ -147,7 +149,7 @@ export default function CardPage() {
         {/* Cards Grid */}
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
             <p className="text-gray-500 mt-4">Loading cards...</p>
           </div>
         ) : cards.length > 0 ? (
@@ -155,9 +157,9 @@ export default function CardPage() {
             {cards.map((card) => (
               <div key={card.id} className="relative">
                 {/* Card Display */}
-                <div className={`relative h-56 rounded-xl shadow-2xl p-6 text-white overflow-hidden ${
+                <div className={`relative h-56 rounded-3xl shadow-xl p-6 text-white overflow-hidden ${
                   card.status === 'active' 
-                    ? 'bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600'
+                    ? 'nubank-gradient'
                     : 'bg-gradient-to-br from-gray-500 to-gray-700'
                 }`}>
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full -mr-20 -mt-20"></div>
@@ -193,7 +195,7 @@ export default function CardPage() {
                 </div>
 
                 {/* Card Controls */}
-                <div className="mt-4 bg-white rounded-xl shadow-lg p-4">
+                <div className="mt-4 bg-white rounded-3xl shadow-md p-6">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium text-gray-700">Status</span>
                     {getStatusBadge(card.status)}
@@ -209,6 +211,7 @@ export default function CardPage() {
                         variant="secondary"
                         size="sm"
                         fullWidth
+                        className="rounded-xl"
                       >
                         <Lock className="h-4 w-4 mr-1" />
                         Freeze
@@ -219,6 +222,7 @@ export default function CardPage() {
                         variant="success"
                         size="sm"
                         fullWidth
+                        className="rounded-xl"
                       >
                         <Unlock className="h-4 w-4 mr-1" />
                         Unfreeze
@@ -230,6 +234,7 @@ export default function CardPage() {
                         variant="danger"
                         size="sm"
                         fullWidth
+                        className="rounded-xl"
                       >
                         <X className="h-4 w-4 mr-1" />
                         Cancel
@@ -241,11 +246,13 @@ export default function CardPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-white rounded-xl shadow-lg">
-            <CreditCard className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <div className="text-center py-12 bg-white rounded-3xl shadow-md">
+            <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
+              <CreditCard className="h-8 w-8 text-purple-600" />
+            </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Cards Yet</h3>
             <p className="text-gray-600 mb-6">Request your first virtual or physical card to get started</p>
-            <Button onClick={() => setShowNewCardModal(true)} variant="primary">
+            <Button onClick={() => setShowNewCardModal(true)} className="bg-purple-600 hover:bg-purple-700">
               <Plus className="h-5 w-5 mr-2" />
               Request Card
             </Button>
@@ -254,15 +261,15 @@ export default function CardPage() {
 
         {/* Transactions */}
         {transactions.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+          <div className="bg-white rounded-3xl shadow-md p-8 mt-8">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Card Transactions</h3>
+              <h3 className="text-2xl font-bold text-gray-900">Card Transactions</h3>
               <div className="flex items-center gap-2">
                 <Filter className="h-5 w-5 text-gray-400" />
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                 >
                   <option value="all">All Categories</option>
                   {categories.map(cat => (
@@ -274,14 +281,14 @@ export default function CardPage() {
 
             <div className="space-y-4">
               {filteredTransactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors">
+                <div key={tx.id} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-3 rounded-xl transition-colors">
                   <div className="flex items-center flex-1">
-                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                      <ShoppingBag className="h-6 w-6 text-blue-600" />
+                    <div className="h-12 w-12 rounded-2xl bg-purple-100 flex items-center justify-center">
+                      <ShoppingBag className="h-6 w-6 text-purple-600" />
                     </div>
                     <div className="ml-4 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">{tx.merchant}</p>
+                        <p className="font-semibold text-gray-900">{tx.merchant}</p>
                         <Badge 
                           variant={tx.status === 'approved' ? 'success' : tx.status === 'declined' ? 'danger' : 'warning'}
                           size="sm"
@@ -296,7 +303,7 @@ export default function CardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`font-semibold text-lg ${
+                    <p className={`font-bold text-lg ${
                       tx.status === 'declined' ? 'text-gray-400 line-through' : 'text-gray-900'
                     }`}>
                       ${tx.amount.toFixed(2)}
@@ -310,24 +317,30 @@ export default function CardPage() {
         )}
 
         {/* Info Section */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-50 rounded-xl p-6">
-            <Shield className="h-8 w-8 text-blue-600 mb-3" />
-            <h4 className="font-semibold text-gray-900 mb-2">Secure Payments</h4>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
+          <div className="bg-white rounded-2xl p-6 shadow-md">
+            <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-4">
+              <Shield className="h-6 w-6 text-purple-600" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">Secure Payments</h4>
             <p className="text-sm text-gray-600">
               All transactions are protected with advanced fraud detection and 3D Secure authentication.
             </p>
           </div>
-          <div className="bg-green-50 rounded-xl p-6">
-            <TrendingUp className="h-8 w-8 text-green-600 mb-3" />
-            <h4 className="font-semibold text-gray-900 mb-2">Instant Issuance</h4>
+          <div className="bg-white rounded-2xl p-6 shadow-md">
+            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4">
+              <TrendingUp className="h-6 w-6 text-green-600" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">Instant Issuance</h4>
             <p className="text-sm text-gray-600">
               Virtual cards are available instantly. Physical cards ship within 5-7 business days.
             </p>
           </div>
-          <div className="bg-purple-50 rounded-xl p-6">
-            <DollarSign className="h-8 w-8 text-purple-600 mb-3" />
-            <h4 className="font-semibold text-gray-900 mb-2">Spending Controls</h4>
+          <div className="bg-white rounded-2xl p-6 shadow-md">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
+              <DollarSign className="h-6 w-6 text-blue-600" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">Spending Controls</h4>
             <p className="text-sm text-gray-600">
               Set daily, weekly, or monthly limits. Control where and how your card can be used.
             </p>
@@ -349,21 +362,21 @@ export default function CardPage() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setSelectedCardType('virtual')}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                className={`p-4 border-2 rounded-xl text-left transition-all ${
                   selectedCardType === 'virtual'
-                    ? 'border-blue-600 bg-blue-50'
+                    ? 'border-purple-600 bg-purple-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <CreditCard className="h-6 w-6 mb-2 text-blue-600" />
+                <CreditCard className="h-6 w-6 mb-2 text-purple-600" />
                 <p className="font-semibold text-gray-900">Virtual</p>
                 <p className="text-xs text-gray-600 mt-1">Instant delivery</p>
               </button>
               <button
                 onClick={() => setSelectedCardType('physical')}
-                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                className={`p-4 border-2 rounded-xl text-left transition-all ${
                   selectedCardType === 'physical'
-                    ? 'border-blue-600 bg-blue-50'
+                    ? 'border-purple-600 bg-purple-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -389,8 +402,8 @@ export default function CardPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-900">
+          <div className="bg-purple-50 rounded-xl p-4">
+            <p className="text-sm text-purple-900">
               <Calendar className="h-4 w-4 inline mr-2" />
               {selectedCardType === 'virtual' 
                 ? 'Your virtual card will be available immediately after issuance.'
@@ -400,7 +413,7 @@ export default function CardPage() {
 
           <Button
             onClick={handleIssueCard}
-            variant="primary"
+            className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
             fullWidth
             disabled={!spendingLimit || parseFloat(spendingLimit) <= 0}
           >
