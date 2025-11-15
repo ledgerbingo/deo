@@ -25,9 +25,24 @@ export interface TransactionDetail {
 
 export class WalletService {
   private provider: ethers.JsonRpcProvider
+  private timeout: number = 5000 // 5 second timeout
 
   constructor() {
-    this.provider = new ethers.JsonRpcProvider(ARC_TESTNET_RPC)
+    this.provider = new ethers.JsonRpcProvider(ARC_TESTNET_RPC, undefined, {
+      staticNetwork: true,
+    })
+  }
+
+  /**
+   * Helper to add timeout to promises
+   */
+  private withTimeout<T>(promise: Promise<T>, ms: number = this.timeout): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error('RPC request timeout')), ms)
+      ),
+    ])
   }
 
   /**
@@ -47,7 +62,7 @@ export class WalletService {
    */
   async getBalance(address: string) {
     try {
-      const balance = await this.provider.getBalance(address)
+      const balance = await this.withTimeout(this.provider.getBalance(address))
       return ethers.formatEther(balance)
     } catch (error) {
       console.error('Error getting balance:', error)
@@ -65,8 +80,8 @@ export class WalletService {
         'function decimals() view returns (uint8)',
       ]
       const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, usdcAbi, this.provider)
-      const balance = await usdcContract.balanceOf(address)
-      const decimals = await usdcContract.decimals()
+      const balance = await this.withTimeout(usdcContract.balanceOf(address))
+      const decimals = await this.withTimeout(usdcContract.decimals())
       return ethers.formatUnits(balance, decimals)
     } catch (error) {
       console.error('Error getting USDC balance:', error)
@@ -82,7 +97,7 @@ export class WalletService {
       const [nativeBalance, usdcBalance, transactionCount] = await Promise.all([
         this.getBalance(address),
         this.getUSDCBalance(address),
-        this.provider.getTransactionCount(address)
+        this.withTimeout(this.provider.getTransactionCount(address))
       ])
 
       return {
