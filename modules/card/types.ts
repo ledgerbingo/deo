@@ -37,6 +37,7 @@ export interface CardRequest {
   userId: string;
   type: CardType;
   spendingLimit: number;
+  cardholderName?: string;
 }
 
 export interface CardControls {
