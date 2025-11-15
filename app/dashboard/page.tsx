@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, TrendingUp, Repeat, Bell, Settings, HelpCircle, Plus, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
-import { Button, Badge, DashboardSkeleton } from '@/components/ui'
+import { Button, Badge, DashboardSkeleton, Navigation } from '@/components/ui'
 
 interface Transaction {
   id: string
@@ -91,16 +91,7 @@ export default function Dashboard() {
   if (isLoading && !walletAddress) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex justify-between items-center">
-              <Link href="/" className="flex items-center">
-                <DollarSign className="h-8 w-8 text-blue-600" />
-                <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
-              </Link>
-            </div>
-          </nav>
-        </header>
+        <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <DashboardSkeleton />
         </main>
@@ -110,54 +101,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 rounded-full nubank-gradient flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-              <span className="ml-3 text-2xl font-bold text-gray-900">DEO</span>
-            </Link>
-            <div className="flex items-center space-x-6">
-              <Link href="/account" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors flex items-center">
-                <Wallet className="h-4 w-4 mr-2" />
-                Account
-              </Link>
-              <Link href="/card" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors flex items-center">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Cards
-              </Link>
-              <Link href="/investment" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors flex items-center">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Invest
-              </Link>
-              <Link href="/exchange" className="text-gray-600 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors flex items-center">
-                <Repeat className="h-4 w-4 mr-2" />
-                Exchange
-              </Link>
-              <Link href="/support" className="text-gray-600 hover:text-purple-600">
-                <HelpCircle className="h-5 w-5" />
-              </Link>
-              <Link href="/settings" className="relative">
-                <Bell className="h-5 w-5 text-gray-600 hover:text-purple-600 transition-colors" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadNotifications}
-                  </span>
-                )}
-              </Link>
-              <Link href="/settings">
-                <Settings className="h-5 w-5 text-gray-600 hover:text-purple-600 transition-colors" />
-              </Link>
-              <div className="w-10 h-10 nubank-gradient rounded-full flex items-center justify-center text-white font-semibold shadow-lg">
-                U
-              </div>
-            </div>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
