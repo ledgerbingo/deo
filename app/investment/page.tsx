@@ -7,6 +7,7 @@ import { Button, Badge, Modal, Input, Navigation, Alert } from '@/components/ui'
 import { investmentService } from '@/modules/investment/service'
 import type { Portfolio, Asset, Trade } from '@/modules/investment/types'
 import { AssetChart } from '@/components/investment/AssetChart'
+import { PortfolioChart } from '@/components/investment/PortfolioChart'
 
 export default function InvestmentPage() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null)
@@ -235,6 +236,18 @@ export default function InvestmentPage() {
               </div>
             </div>
 
+            {/* Portfolio Performance Chart */}
+            {portfolio && (
+              <div className="mb-8">
+                <PortfolioChart
+                  userId={userId}
+                  totalValue={portfolio.totalValue}
+                  totalReturn={portfolio.totalReturn}
+                  returnPercentage={portfolio.returnPercentage}
+                />
+              </div>
+            )}
+
             {/* Holdings */}
             {portfolio && portfolio.holdings.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -258,13 +271,19 @@ export default function InvestmentPage() {
                             <Badge variant="default" size="sm">{holding.asset.symbol}</Badge>
                             <Badge variant="info" size="sm">{holding.asset.type}</Badge>
                           </div>
-                          <div className="flex items-center gap-4 mt-1">
-                            <p className="text-sm text-gray-500">
-                              {holding.quantity} units @ ${holding.averageCost.toFixed(2)}
-                            </p>
-                            <p className="text-sm font-medium text-gray-700">
-                              Current: ${holding.asset.currentPrice.toFixed(2)}
-                            </p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <span>{holding.quantity} units</span>
+                              <span>•</span>
+                              <span>Avg. ${holding.averageCost.toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                              <DollarSign className="h-4 w-4 text-blue-600" />
+                              <span className="text-base font-bold text-gray-900">
+                                ${holding.asset.currentPrice.toFixed(2)}
+                              </span>
+                              <span className="text-xs text-gray-500">now</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -351,11 +370,14 @@ export default function InvestmentPage() {
                       <Badge variant="default" size="sm">{asset.type}</Badge>
                     </div>
                     <div className="flex items-end justify-between mb-4">
-                      <div>
-                        <p className="text-2xl font-bold text-gray-900">${asset.currentPrice.toFixed(2)}</p>
-                        <p className="text-xs text-gray-500 mt-1">Current price</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="h-5 w-5 text-blue-600" />
+                          <p className="text-3xl font-bold text-gray-900">${asset.currentPrice.toFixed(2)}</p>
+                        </div>
+                        <p className="text-xs text-gray-500">Current price</p>
                       </div>
-                      <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${
+                      <div className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg shadow-sm ${
                         asset.changePercentage >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}>
                         {asset.changePercentage >= 0 ? (
