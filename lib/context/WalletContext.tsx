@@ -72,6 +72,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         name: name || `Wallet ${walletIndex + 1}`,
         color: getWalletColor(walletIndex),
         createdAt: Date.now(),
+        privateKey: data.wallet.privateKey,
         mnemonic: data.wallet.mnemonic,
       }
       
