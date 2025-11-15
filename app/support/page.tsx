@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { DollarSign, HelpCircle, MessageCircle, Search, ArrowLeft, Book, FileText, Mail, Phone } from 'lucide-react'
+import { Navigation } from '@/components/ui'
 
 export default function SupportPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -99,22 +100,8 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/dashboard" className="flex items-center text-blue-600 hover:text-blue-700">
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Dashboard
-            </Link>
-            <Link href="/" className="flex items-center">
-              <DollarSign className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
-            </Link>
-            <div className="w-32"></div>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 py-12">
         {/* Hero Section */}

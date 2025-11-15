@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { TrendingUp, TrendingDown, DollarSign, PieChart, ArrowUpRight, ArrowDownRight, Plus, Search, Filter } from 'lucide-react'
-import { Button, Badge, Modal, Input } from '@/components/ui'
+import { Button, Badge, Modal, Input, Navigation } from '@/components/ui'
 import { investmentService } from '@/modules/investment/service'
 import type { Portfolio, Asset, Trade } from '@/modules/investment/types'
 
@@ -79,31 +79,8 @@ export default function InvestmentPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center">
-              <DollarSign className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/account" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Account
-              </Link>
-              <Link href="/card" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Cards
-              </Link>
-              <Link href="/settings" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Settings
-              </Link>
-            </div>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
