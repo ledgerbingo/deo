@@ -450,7 +450,7 @@ export default function AccountPage() {
                 disabled={isLoading}
               >
                 <Send className="h-5 w-5 mr-2" />
-                Send
+                Send / Withdraw
               </Button>
               <Button
                 onClick={() => setShowReceiveModal(true)}
@@ -458,7 +458,7 @@ export default function AccountPage() {
                 className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
               >
                 <ArrowDownLeft className="h-5 w-5 mr-2" />
-                Receive
+                Receive / Deposit
               </Button>
             </div>
           </div>
@@ -569,15 +569,43 @@ export default function AccountPage() {
       <Modal
         isOpen={showReceiveModal}
         onClose={() => setShowReceiveModal(false)}
-        title="Receive USDC"
+        title="Receive / Deposit USDC"
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
-            Share your wallet address to receive USDC on the ARC testnet:
-          </p>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="font-mono text-sm break-all">{walletAddress}</p>
+          <div className="text-center">
+            <p className="text-sm text-gray-600 mb-4">
+              Share your wallet address to receive USDC on the ARC testnet
+            </p>
+            
+            {/* QR Code Placeholder */}
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 mb-4">
+              <div className="bg-white p-6 rounded-lg shadow-inner inline-block">
+                <div className="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Wallet className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                    <p className="text-xs text-gray-500">QR Code</p>
+                    <p className="text-xs text-gray-400">Coming soon</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your Wallet Address
+            </label>
+            <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+              <p className="font-mono text-sm break-all text-gray-900">{walletAddress}</p>
+            </div>
+          </div>
+          
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-yellow-800 text-sm">
+              <strong>⚠️ Important:</strong> Only send USDC on the Circle ARC testnet to this address. Sending tokens on other networks may result in permanent loss.
+            </p>
+          </div>
+          
           <div className="flex gap-2">
             <Button
               onClick={() => copyToClipboard(walletAddress)}
@@ -603,7 +631,7 @@ export default function AccountPage() {
       <Modal
         isOpen={showSendModal}
         onClose={handleCloseSendModal}
-        title="Send USDC"
+        title="Send / Withdraw USDC"
       >
         <div className="space-y-4">
           <div>
@@ -642,6 +670,39 @@ export default function AccountPage() {
                 </div>
               )}
             </div>
+            
+            {/* Quick Amount Buttons */}
+            {walletInfo && parseFloat(walletInfo.usdcBalance) > 0 && (
+              <div className="mt-3">
+                <p className="text-xs text-gray-500 mb-2">Quick amounts:</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { label: '10', value: '10' },
+                    { label: '50', value: '50' },
+                    { label: '100', value: '100' },
+                    { label: 'Max', value: walletInfo.usdcBalance }
+                  ].map((btn) => (
+                    <button
+                      key={btn.label}
+                      onClick={() => {
+                        const val = parseFloat(btn.value)
+                        const balance = parseFloat(walletInfo.usdcBalance)
+                        if (val <= balance) {
+                          setSendAmount(btn.value)
+                          setError(null)
+                        } else {
+                          setSendAmount(balance.toFixed(2))
+                          setError(null)
+                        }
+                      }}
+                      className="px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                    >
+                      {btn.label === 'Max' ? 'Max' : `$${btn.label}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           {error && (
