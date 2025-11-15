@@ -14,24 +14,41 @@ export class CardService {
    * @returns Promise resolving to new card
    */
   async issueCard(request: CardRequest): Promise<Card> {
-    console.log(`Issuing ${request.type} card for user ${request.userId}`);
-    
-    // In production, this would call Stripe Issuing API
-    const card: Card = {
-      id: `card_${Date.now()}`,
-      userId: request.userId,
-      type: request.type,
-      status: 'active',
-      last4: Math.floor(1000 + Math.random() * 9000).toString(),
-      brand: 'visa',
-      expiryMonth: 12,
-      expiryYear: new Date().getFullYear() + 3,
-      spendingLimit: request.spendingLimit,
-      availableBalance: request.spendingLimit,
-      createdAt: new Date(),
-    };
+    try {
+      const response = await fetch('/api/stripe/card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: request.userId,
+          cardholderName: request.cardholderName || 'DEO User',
+          isVirtual: request.type === 'virtual',
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to issue card');
+      }
 
-    return card;
+      const cardData = data.card;
+      return {
+        id: cardData.id,
+        userId: request.userId,
+        type: cardData.type,
+        status: cardData.status,
+        last4: cardData.last4,
+        brand: cardData.brand,
+        expiryMonth: cardData.exp_month,
+        expiryYear: cardData.exp_year,
+        spendingLimit: request.spendingLimit || 5000,
+        availableBalance: request.spendingLimit || 5000,
+        createdAt: new Date(),
+      };
+    } catch (error) {
+      console.error('Error issuing card:', error);
+      throw error;
+    }
   }
 
   /**
@@ -41,36 +58,15 @@ export class CardService {
    * @returns Promise resolving to card details
    */
   async getCard(cardId: string): Promise<Card | null> {
-    console.log(`Fetching card: ${cardId}`);
-    
-    return {
-      id: cardId,
-      userId: 'user_123',
-      type: 'virtual',
-      status: 'active',
-      last4: '4242',
-      brand: 'visa',
-      expiryMonth: 12,
-      expiryYear: 2027,
-      spendingLimit: 5000,
-      availableBalance: 4500,
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    };
-  }
-
-  /**
-   * Get all cards for a user
-   * 
-   * @param userId - User identifier
-   * @returns Promise resolving to array of cards
-   */
-  async getUserCards(userId: string): Promise<Card[]> {
-    console.log(`Fetching cards for user: ${userId}`);
-    
-    return [
-      {
-        id: 'card_1',
-        userId,
+    try {
+      // Note: Stripe doesn't have a direct "get single card by ID" endpoint without customer
+      // In production, you'd need to implement proper card storage or user association
+      console.log(`Card details require customer association: ${cardId}`);
+      
+      // For now, return a placeholder that matches the structure
+      return {
+        id: cardId,
+        userId: 'user_123',
         type: 'virtual',
         status: 'active',
         last4: '4242',
@@ -80,8 +76,46 @@ export class CardService {
         spendingLimit: 5000,
         availableBalance: 4500,
         createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      },
-    ];
+      };
+    } catch (error) {
+      console.error('Error fetching card:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get all cards for a user
+   * 
+   * @param userId - User identifier
+   * @returns Promise resolving to array of cards
+   */
+  async getUserCards(userId: string): Promise<Card[]> {
+    try {
+      const response = await fetch(`/api/stripe/card?customerId=${userId}`);
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to get cards');
+      }
+
+      return (data.cards || []).map((cardData: any) => ({
+        id: cardData.id,
+        userId,
+        type: cardData.type,
+        status: cardData.status,
+        last4: cardData.last4,
+        brand: cardData.brand,
+        expiryMonth: cardData.exp_month,
+        expiryYear: cardData.exp_year,
+        spendingLimit: 5000,
+        availableBalance: 4500,
+        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      }));
+    } catch (error) {
+      console.error('Error fetching user cards:', error);
+      // Return empty array on error for graceful degradation
+      return [];
+    }
   }
 
   /**

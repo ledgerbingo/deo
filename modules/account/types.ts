@@ -34,6 +34,7 @@ export interface TransactionRequest {
   to: string;
   amount: number;
   currency?: string;
+  privateKey?: string;
 }
 
 export interface TransactionHistory {

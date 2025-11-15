@@ -107,12 +107,27 @@ export class OnboardingService {
    * @returns Promise resolving to KYC session information
    */
   async startKYC(userId: string): Promise<{ sessionId: string; url: string }> {
-    console.log(`Starting KYC for user ${userId}`);
-    // In production, this would create a Stripe Identity session
-    return {
-      sessionId: `vs_${Date.now()}`,
-      url: `https://verify.stripe.com/start/${Date.now()}`,
-    };
+    try {
+      const response = await fetch('/api/stripe/kyc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId: userId }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to start KYC');
+      }
+
+      return {
+        sessionId: data.sessionId,
+        url: data.url || '',
+      };
+    } catch (error) {
+      console.error('Error starting KYC:', error);
+      throw error;
+    }
   }
 
   /**
@@ -122,11 +137,45 @@ export class OnboardingService {
    * @returns Promise resolving to KYC data
    */
   async getKYCStatus(userId: string): Promise<KYCData> {
-    console.log(`Fetching KYC status for user ${userId}`);
-    return {
-      userId,
-      status: 'not_started' as KYCStatus,
-    };
+    try {
+      // This would need a sessionId in production - for now return not_started
+      // You'd typically store the sessionId associated with the userId
+      return {
+        userId,
+        status: 'not_started' as KYCStatus,
+      };
+    } catch (error) {
+      console.error('Error fetching KYC status:', error);
+      return {
+        userId,
+        status: 'not_started' as KYCStatus,
+      };
+    }
+  }
+
+  /**
+   * Get KYC status by session ID
+   * 
+   * @param sessionId - Stripe verification session ID
+   * @returns Promise resolving to KYC data
+   */
+  async getKYCStatusBySession(sessionId: string): Promise<{ status: string; verified: boolean }> {
+    try {
+      const response = await fetch(`/api/stripe/kyc?sessionId=${sessionId}`);
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to get KYC status');
+      }
+
+      return {
+        status: data.status,
+        verified: data.verified,
+      };
+    } catch (error) {
+      console.error('Error fetching KYC status:', error);
+      throw error;
+    }
   }
 }
 
