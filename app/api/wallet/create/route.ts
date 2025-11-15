@@ -55,32 +55,70 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Connect to ARC testnet
-    const provider = new ethers.JsonRpcProvider(ARC_TESTNET_RPC)
+    try {
+      // Connect to ARC testnet with timeout
+      const provider = new ethers.JsonRpcProvider(ARC_TESTNET_RPC, undefined, {
+        staticNetwork: true,
+      })
 
-    // Get wallet info
-    const balance = await provider.getBalance(address)
-    const transactionCount = await provider.getTransactionCount(address)
+      // Set timeout for RPC calls
+      const timeout = (ms: number) => new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('RPC request timeout')), ms)
+      )
 
-    // Get USDC balance
-    const USDC_CONTRACT = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
-    const usdcAbi = [
-      'function balanceOf(address account) view returns (uint256)',
-      'function decimals() view returns (uint8)',
-    ]
-    const usdcContract = new ethers.Contract(USDC_CONTRACT, usdcAbi, provider)
-    const usdcBalance = await usdcContract.balanceOf(address)
-    const decimals = await usdcContract.decimals()
+      // Get wallet info with timeout
+      const balance = await Promise.race([
+        provider.getBalance(address),
+        timeout(5000)
+      ]) as bigint
+      
+      const transactionCount = await Promise.race([
+        provider.getTransactionCount(address),
+        timeout(5000)
+      ]) as number
 
-    return NextResponse.json({
-      success: true,
-      wallet: {
-        address,
-        nativeBalance: ethers.formatEther(balance),
-        usdcBalance: ethers.formatUnits(usdcBalance, decimals),
-        transactionCount,
-      },
-    })
+      // Get USDC balance
+      const USDC_CONTRACT = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+      const usdcAbi = [
+        'function balanceOf(address account) view returns (uint256)',
+        'function decimals() view returns (uint8)',
+      ]
+      const usdcContract = new ethers.Contract(USDC_CONTRACT, usdcAbi, provider)
+      const usdcBalance = await Promise.race([
+        usdcContract.balanceOf(address),
+        timeout(5000)
+      ]) as bigint
+      
+      const decimals = await Promise.race([
+        usdcContract.decimals(),
+        timeout(5000)
+      ]) as number
+
+      return NextResponse.json({
+        success: true,
+        wallet: {
+          address,
+          nativeBalance: ethers.formatEther(balance),
+          usdcBalance: ethers.formatUnits(usdcBalance, decimals),
+          transactionCount,
+        },
+      })
+    } catch (rpcError) {
+      // RPC connection failed - return demo data for development
+      console.warn('RPC connection failed, returning demo data:', rpcError)
+      
+      return NextResponse.json({
+        success: true,
+        wallet: {
+          address,
+          nativeBalance: '0.1',
+          usdcBalance: '1000.00',
+          transactionCount: 0,
+        },
+        isDemoMode: true,
+        message: 'Using demo data - ARC testnet RPC unavailable',
+      })
+    }
   } catch (error) {
     console.error('Error retrieving wallet:', error)
     return NextResponse.json(

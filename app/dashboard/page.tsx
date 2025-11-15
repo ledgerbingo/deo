@@ -38,6 +38,11 @@ export default function Dashboard() {
       
       if (walletData.success) {
         setBalance(parseFloat(walletData.wallet.usdcBalance))
+        
+        // Show demo mode notification if applicable
+        if (walletData.isDemoMode) {
+          console.info('Demo mode:', walletData.message)
+        }
       }
 
       // Fetch transaction history

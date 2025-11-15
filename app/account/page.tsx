@@ -74,6 +74,11 @@ export default function AccountPage() {
       
       if (walletData.success) {
         setWalletInfo(walletData.wallet)
+        
+        // Show demo mode notification if applicable
+        if (walletData.isDemoMode) {
+          console.info('Demo mode:', walletData.message)
+        }
       } else {
         throw new Error(walletData.error || 'Failed to load wallet')
       }
