@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { DollarSign, Menu, X, User, CreditCard, TrendingUp, Repeat, HelpCircle, LayoutDashboard } from 'lucide-react'
+import WalletSelector from './WalletSelector'
 
 const navItems = [
   { href: '/account', label: 'Account', icon: User },
@@ -57,7 +58,8 @@ export default function Navigation() {
           </div>
 
           {/* CTA Button - Desktop */}
-          <div className="hidden md:flex">
+          <div className="hidden md:flex items-center gap-3">
+            <WalletSelector />
             <Link
               href="/dashboard"
               className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:shadow-lg transform hover:scale-105"
