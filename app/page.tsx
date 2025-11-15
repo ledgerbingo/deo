@@ -2,26 +2,34 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Wallet, CreditCard, Shield, ArrowRight, DollarSign, Lock, TrendingUp, Zap, Globe, Award } from 'lucide-react'
+import { Wallet, CreditCard, Shield, ArrowRight, DollarSign, Lock, TrendingUp, Zap, Globe, Award, Smartphone } from 'lucide-react'
 
 export default function Home() {
   const [email, setEmail] = useState('')
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
+              <div className="w-10 h-10 rounded-full nubank-gradient flex items-center justify-center">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+              <span className="ml-3 text-2xl font-bold text-gray-900">DEO</span>
             </div>
-            <div className="flex space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Dashboard
+            <div className="flex items-center space-x-8">
+              <Link href="/dashboard" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
+                For you
               </Link>
-              <Link href="/dashboard" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-all hover:shadow-lg">
+              <Link href="/card" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
+                Cards
+              </Link>
+              <Link href="/exchange" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
+                Services
+              </Link>
+              <Link href="/dashboard" className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2.5 rounded-full text-sm font-medium transition-all hover:shadow-lg">
                 Get Started
               </Link>
             </div>
@@ -30,146 +38,138 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6">
-            <Zap className="h-4 w-4" />
-            <span>Powered by Circle ARC Blockchain & Stripe</span>
-          </div>
-          <h1 className="text-5xl font-extrabold text-gray-900 sm:text-6xl md:text-7xl">
-            <span className="block">Next-Gen Finance</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-              Powered by USDC & ARC
-            </span>
-          </h1>
-          <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-600">
-            Experience comprehensive financial services on Circle's ARC blockchain. 
-            USDC stablecoin wallets, Stripe-powered KYC, and instant card issuance.
-          </p>
-          <div className="mt-10 max-w-md mx-auto">
-            <div className="flex gap-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow"
-              />
-              <Link href="/dashboard" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 flex items-center transition-all hover:shadow-lg hover:scale-105">
-                Start <ArrowRight className="ml-2 h-5 w-5" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="pt-20 pb-16 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              The financial service
+              <span className="block text-purple-600">made for you</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+              Simple, secure, and 100% digital. Your USDC wallet, cards, and complete financial control in one place.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link href="/dashboard" className="bg-purple-600 text-white px-8 py-4 rounded-full text-base font-semibold hover:bg-purple-700 transition-all hover:shadow-xl inline-flex items-center group">
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </div>
-          </div>
-
-          {/* Trust Badges */}
-          <div className="mt-12 flex items-center justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              <span>Bank-level Security</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              <span>Fully Licensed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              <span>Global Coverage</span>
             </div>
           </div>
         </div>
 
-        {/* Features */}
-        <div className="mt-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-blue-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-600 text-white mb-4">
-              <Wallet className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">USDC Wallet</h3>
-            <p className="text-gray-600">
-              Account abstraction wallet with USDC stablecoin support on Circle's ARC blockchain testnet. 
-              Secure, fast, and user-friendly.
-            </p>
-          </div>
+        {/* Features Grid */}
+        <div className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {/* Feature 1 */}
+              <div className="bg-white rounded-3xl p-8 hover-lift">
+                <div className="w-14 h-14 rounded-2xl nubank-gradient flex items-center justify-center mb-6">
+                  <Wallet className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">USDC Wallet</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Account abstraction wallet with USDC stablecoin on Circle's ARC blockchain. Secure, fast, and user-friendly.
+                </p>
+              </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-green-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-600 text-white mb-4">
-              <CreditCard className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Card Issuance</h3>
-            <p className="text-gray-600">
-              Instant virtual and physical card issuance powered by Stripe. 
-              Spend your USDC anywhere with seamless conversion.
-            </p>
-          </div>
+              {/* Feature 2 */}
+              <div className="bg-white rounded-3xl p-8 hover-lift">
+                <div className="w-14 h-14 rounded-2xl nubank-gradient flex items-center justify-center mb-6">
+                  <CreditCard className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Digital Cards</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Instant virtual and physical card issuance. Spend your USDC anywhere with seamless conversion.
+                </p>
+              </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-purple-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-purple-600 text-white mb-4">
-              <Shield className="h-6 w-6" />
+              {/* Feature 3 */}
+              <div className="bg-white rounded-3xl p-8 hover-lift">
+                <div className="w-14 h-14 rounded-2xl nubank-gradient flex items-center justify-center mb-6">
+                  <Shield className="h-7 w-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Secure & Verified</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Complete KYC verification through Stripe Identity. Enterprise-grade security for your peace of mind.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Verified Identity</h3>
-            <p className="text-gray-600">
-              Complete KYC verification through Stripe Identity. 
-              Fast, secure, and compliant identity verification.
-            </p>
-          </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-indigo-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-600 text-white mb-4">
-              <Lock className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Secure & Private</h3>
-            <p className="text-gray-600">
-              Enterprise-grade security with account abstraction. 
-              Your keys, your crypto, your control.
-            </p>
-          </div>
+            {/* Additional Features */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center p-8">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                  <Lock className="h-6 w-6 text-purple-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Your Control</h4>
+                <p className="text-gray-600">Your keys, your crypto, complete control</p>
+              </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-yellow-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-yellow-600 text-white mb-4">
-              <TrendingUp className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Low Fees</h3>
-            <p className="text-gray-600">
-              Enjoy minimal transaction fees on the ARC blockchain. 
-              More value retained in your wallet.
-            </p>
-          </div>
+              <div className="text-center p-8">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Low Fees</h4>
+                <p className="text-gray-600">Minimal transaction fees on ARC blockchain</p>
+              </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-red-200">
-            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white mb-4">
-              <DollarSign className="h-6 w-6" />
+              <div className="text-center p-8">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="h-6 w-6 text-purple-600" />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">Stable Value</h4>
+                <p className="text-gray-600">USDC maintains 1:1 peg with USD</p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Stable Value</h3>
-            <p className="text-gray-600">
-              USDC maintains a 1:1 peg with the US dollar. 
-              No volatility, just stable digital currency.
-            </p>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="mt-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-2xl p-12 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,black)]"></div>
-          <div className="relative z-10">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Ready to Transform Your Financial Experience?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join DEO Finance today and experience the future of digital finance
-            </p>
-            <Link href="/dashboard" className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-all hover:shadow-xl hover:scale-105">
-              Launch Dashboard <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+        <div className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="nubank-gradient rounded-3xl p-12 md:p-16 text-center relative overflow-hidden">
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                  Ready to take control of your finances?
+                </h2>
+                <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto">
+                  Join thousands who already manage their money with DEO
+                </p>
+                <Link href="/dashboard" className="inline-flex items-center bg-white text-purple-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl text-lg">
+                  Get Started Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+              {/* Decorative circles */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48"></div>
+            </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="mt-24 bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-gray-500">
-            © 2024 DEO Finance. Built on Circle's ARC Blockchain. Powered by Stripe.
-          </p>
+      <footer className="bg-gray-50 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center mb-6 md:mb-0">
+              <div className="w-10 h-10 rounded-full nubank-gradient flex items-center justify-center">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+              <span className="ml-3 text-xl font-bold text-gray-900">DEO</span>
+            </div>
+            <div className="flex space-x-8 text-sm text-gray-600">
+              <Link href="/dashboard" className="hover:text-purple-600 transition-colors">About</Link>
+              <Link href="/support" className="hover:text-purple-600 transition-colors">Support</Link>
+              <Link href="/dashboard" className="hover:text-purple-600 transition-colors">Careers</Link>
+              <Link href="/dashboard" className="hover:text-purple-600 transition-colors">Blog</Link>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-200 text-center">
+            <p className="text-sm text-gray-500">
+              © 2024 DEO Finance. Built on Circle's ARC Blockchain. Powered by Stripe.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
