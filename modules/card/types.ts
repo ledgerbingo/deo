@@ -19,6 +19,7 @@ export interface Card {
   spendingLimit: number;
   availableBalance: number;
   createdAt: Date;
+  isDemo?: boolean; // Indicates if this is a demo card
 }
 
 export interface CardTransaction {
