@@ -30,17 +30,18 @@ export default function Dashboard() {
   useEffect(() => {
     if (activeWallet) {
       setWalletAddress(activeWallet.address)
-      loadWalletData()
+      loadWalletData(activeWallet.address)
     }
   }, [activeWallet])
 
-  const loadWalletData = async () => {
-    if (!walletAddress) return
+  const loadWalletData = async (address?: string) => {
+    const addressToUse = address || walletAddress
+    if (!addressToUse) return
     
     setIsLoading(true)
     try {
       // Fetch wallet info
-      const walletResponse = await fetch(`/api/wallet/create?address=${walletAddress}`)
+      const walletResponse = await fetch(`/api/wallet/create?address=${addressToUse}`)
       const walletData = await walletResponse.json()
       
       if (walletData.success) {
@@ -53,7 +54,7 @@ export default function Dashboard() {
       }
 
       // Fetch transaction history
-      const txResponse = await fetch(`/api/wallet/transactions?address=${walletAddress}&limit=10`)
+      const txResponse = await fetch(`/api/wallet/transactions?address=${addressToUse}&limit=10`)
       const txData = await txResponse.json()
       
       if (txData.success && txData.transactions) {
