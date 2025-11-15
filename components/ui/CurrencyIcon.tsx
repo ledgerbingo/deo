@@ -2,13 +2,13 @@
  * Currency Icon Component
  * 
  * Displays professional currency icons with circular badges
- * Inspired by Circle StableFX design patterns
+ * Updated to support Circle StableFX stablecoins with their actual icons
  */
 
 import React from 'react'
-import { DollarSign, Euro, PoundSterling, Coins } from 'lucide-react'
-
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'USDC' | 'EURC' | 'BTC' | 'ETH'
+import { DollarSign, Euro, Coins } from 'lucide-react'
+import { STABLECOINS } from '@/modules/exchange/stablecoins'
+import type { Currency } from '@/modules/exchange/types'
 
 interface CurrencyIconProps {
   currency: Currency
@@ -39,26 +39,12 @@ export function CurrencyIcon({
 }: CurrencyIconProps) {
   const getCurrencyConfig = (curr: Currency) => {
     const configs = {
-      USD: {
-        gradient: 'from-green-400 to-green-600',
-        icon: DollarSign,
-        label: 'US Dollar',
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
-      },
       USDC: {
         gradient: 'from-blue-400 to-blue-600',
         icon: DollarSign,
         label: 'USD Coin',
         bgColor: 'bg-blue-50',
         textColor: 'text-blue-700',
-      },
-      EUR: {
-        gradient: 'from-indigo-400 to-indigo-600',
-        icon: Euro,
-        label: 'Euro',
-        bgColor: 'bg-indigo-50',
-        textColor: 'text-indigo-700',
       },
       EURC: {
         gradient: 'from-purple-400 to-purple-600',
@@ -67,40 +53,96 @@ export function CurrencyIcon({
         bgColor: 'bg-purple-50',
         textColor: 'text-purple-700',
       },
-      GBP: {
-        gradient: 'from-violet-400 to-violet-600',
-        icon: PoundSterling,
-        label: 'British Pound',
-        bgColor: 'bg-violet-50',
-        textColor: 'text-violet-700',
+      AUDF: {
+        gradient: 'from-emerald-400 to-emerald-600',
+        icon: Coins,
+        label: 'Australian Dollar Forte',
+        bgColor: 'bg-emerald-50',
+        textColor: 'text-emerald-700',
       },
-      JPY: {
+      BRLA: {
+        gradient: 'from-green-400 to-green-600',
+        icon: Coins,
+        label: 'Brazilian Real Asset',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-700',
+      },
+      JPYC: {
         gradient: 'from-rose-400 to-rose-600',
         icon: Coins,
-        label: 'Japanese Yen',
+        label: 'JPY Coin',
         bgColor: 'bg-rose-50',
         textColor: 'text-rose-700',
       },
-      BTC: {
+      KRW1: {
+        gradient: 'from-indigo-400 to-indigo-600',
+        icon: Coins,
+        label: 'Korean Won 1',
+        bgColor: 'bg-indigo-50',
+        textColor: 'text-indigo-700',
+      },
+      MXNB: {
         gradient: 'from-orange-400 to-orange-600',
         icon: Coins,
-        label: 'Bitcoin',
+        label: 'Mexican Peso Bitso',
         bgColor: 'bg-orange-50',
         textColor: 'text-orange-700',
       },
-      ETH: {
+      PHPC: {
         gradient: 'from-cyan-400 to-cyan-600',
         icon: Coins,
-        label: 'Ethereum',
+        label: 'Philippine Peso Coin',
         bgColor: 'bg-cyan-50',
         textColor: 'text-cyan-700',
+      },
+      QCAD: {
+        gradient: 'from-red-400 to-red-600',
+        icon: Coins,
+        label: 'QCAD Stablecoin',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+      },
+      ZARU: {
+        gradient: 'from-amber-400 to-amber-600',
+        icon: Coins,
+        label: 'South African Rand Universal',
+        bgColor: 'bg-amber-50',
+        textColor: 'text-amber-700',
       },
     }
     return configs[curr]
   }
 
   const config = getCurrencyConfig(currency)
+  const stablecoinInfo = STABLECOINS[currency]
   const Icon = config.icon
+
+  // Use actual stablecoin icon if available
+  if (stablecoinInfo?.icon && !showBadge) {
+    return (
+      <div className={`inline-flex items-center justify-center ${className}`}>
+        <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg ring-2 ring-gray-100`}>
+          <img 
+            src={stablecoinInfo.icon} 
+            alt={stablecoinInfo.name}
+            className={`${sizeClasses[size]} object-contain p-1`}
+            onError={(e) => {
+              // Fallback to gradient icon if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                parent.className = `${sizeClasses[size]} rounded-full bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-lg ring-2 ring-white`;
+                const iconElement = document.createElement('div');
+                iconElement.className = `${iconSizes[size]} text-white`;
+                parent.appendChild(iconElement);
+              }
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   if (!showBadge) {
     return (
@@ -114,9 +156,23 @@ export function CurrencyIcon({
 
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
-      <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-lg ring-2 ring-white`}>
-        <Icon className={`${iconSizes[size]} text-white`} />
-      </div>
+      {stablecoinInfo?.icon ? (
+        <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg ring-2 ring-gray-100`}>
+          <img 
+            src={stablecoinInfo.icon} 
+            alt={stablecoinInfo.name}
+            className={`${sizeClasses[size]} object-contain p-1`}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
+          />
+        </div>
+      ) : (
+        <div className={`${sizeClasses[size]} rounded-full bg-gradient-to-br ${config.gradient} flex items-center justify-center shadow-lg ring-2 ring-white`}>
+          <Icon className={`${iconSizes[size]} text-white`} />
+        </div>
+      )}
       <div>
         <div className="font-bold text-gray-900">{currency}</div>
         <div className="text-xs text-gray-500">{config.label}</div>
@@ -142,45 +198,55 @@ export function CurrencyBadge({
 
 function getCurrencyConfig(curr: Currency) {
   const configs = {
-    USD: {
-      gradient: 'from-green-400 to-green-600',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700',
-    },
     USDC: {
       gradient: 'from-blue-400 to-blue-600',
       bgColor: 'bg-blue-50',
       textColor: 'text-blue-700',
-    },
-    EUR: {
-      gradient: 'from-indigo-400 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      textColor: 'text-indigo-700',
     },
     EURC: {
       gradient: 'from-purple-400 to-purple-600',
       bgColor: 'bg-purple-50',
       textColor: 'text-purple-700',
     },
-    GBP: {
-      gradient: 'from-violet-400 to-violet-600',
-      bgColor: 'bg-violet-50',
-      textColor: 'text-violet-700',
+    AUDF: {
+      gradient: 'from-emerald-400 to-emerald-600',
+      bgColor: 'bg-emerald-50',
+      textColor: 'text-emerald-700',
     },
-    JPY: {
+    BRLA: {
+      gradient: 'from-green-400 to-green-600',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-700',
+    },
+    JPYC: {
       gradient: 'from-rose-400 to-rose-600',
       bgColor: 'bg-rose-50',
       textColor: 'text-rose-700',
     },
-    BTC: {
+    KRW1: {
+      gradient: 'from-indigo-400 to-indigo-600',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-700',
+    },
+    MXNB: {
       gradient: 'from-orange-400 to-orange-600',
       bgColor: 'bg-orange-50',
       textColor: 'text-orange-700',
     },
-    ETH: {
+    PHPC: {
       gradient: 'from-cyan-400 to-cyan-600',
       bgColor: 'bg-cyan-50',
       textColor: 'text-cyan-700',
+    },
+    QCAD: {
+      gradient: 'from-red-400 to-red-600',
+      bgColor: 'bg-red-50',
+      textColor: 'text-red-700',
+    },
+    ZARU: {
+      gradient: 'from-amber-400 to-amber-600',
+      bgColor: 'bg-amber-50',
+      textColor: 'text-amber-700',
     },
   }
   return configs[curr]

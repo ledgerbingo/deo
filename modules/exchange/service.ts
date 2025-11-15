@@ -1,10 +1,11 @@
 /**
  * Exchange Service
  * 
- * Manages currency exchange operations.
+ * Manages currency exchange operations for Circle StableFX stablecoins.
  */
 
 import { Currency, ExchangeRate, ExchangeRequest, Exchange, CurrencyPair } from './types';
+import { STABLECOINS } from './stablecoins';
 
 export class ExchangeService {
   /**
@@ -17,22 +18,49 @@ export class ExchangeService {
   async getExchangeRate(from: Currency, to: Currency): Promise<ExchangeRate> {
     console.log(`Fetching exchange rate: ${from} -> ${to}`);
     
-    // Mock exchange rates
+    // Mock exchange rates for Circle StableFX stablecoins
+    // In production, these would come from Circle StableFX API
     const rates: Record<string, number> = {
-      'USD-EUR': 0.92,
-      'USD-GBP': 0.79,
-      'USD-JPY': 149.50,
-      'USD-USDC': 1.0,
-      'USDC-USD': 1.0,
-      'EUR-USD': 1.09,
-      'EUR-GBP': 0.86,
-      'EUR-JPY': 163.04,
-      'GBP-USD': 1.27,
-      'GBP-EUR': 1.16,
-      'GBP-JPY': 189.24,
-      'JPY-USD': 0.0067,
-      'JPY-EUR': 0.0061,
-      'JPY-GBP': 0.0053,
+      // USDC pairs
+      'USDC-EURC': 0.92,
+      'USDC-AUDF': 1.52,
+      'USDC-BRLA': 5.71,
+      'USDC-JPYC': 149.50,
+      'USDC-KRW1': 1320.50,
+      'USDC-MXNB': 17.25,
+      'USDC-PHPC': 56.50,
+      'USDC-QCAD': 1.36,
+      'USDC-ZARU': 18.95,
+      
+      // EURC pairs
+      'EURC-USDC': 1.09,
+      'EURC-AUDF': 1.65,
+      'EURC-BRLA': 6.21,
+      'EURC-JPYC': 163.04,
+      'EURC-KRW1': 1436.50,
+      'EURC-MXNB': 18.78,
+      'EURC-PHPC': 61.52,
+      'EURC-QCAD': 1.48,
+      'EURC-ZARU': 20.63,
+      
+      // Other pairs (reverse of above)
+      'AUDF-USDC': 0.66,
+      'BRLA-USDC': 0.18,
+      'JPYC-USDC': 0.0067,
+      'KRW1-USDC': 0.00076,
+      'MXNB-USDC': 0.058,
+      'PHPC-USDC': 0.018,
+      'QCAD-USDC': 0.74,
+      'ZARU-USDC': 0.053,
+      
+      'AUDF-EURC': 0.61,
+      'BRLA-EURC': 0.16,
+      'JPYC-EURC': 0.0061,
+      'KRW1-EURC': 0.00070,
+      'MXNB-EURC': 0.053,
+      'PHPC-EURC': 0.016,
+      'QCAD-EURC': 0.68,
+      'ZARU-EURC': 0.048,
     };
 
     const key = `${from}-${to}`;
@@ -54,14 +82,20 @@ export class ExchangeService {
   async getAvailablePairs(): Promise<CurrencyPair[]> {
     console.log('Fetching available currency pairs');
     
-    return [
-      { from: 'USD', to: 'EUR', rate: 0.92, available: true },
-      { from: 'USD', to: 'GBP', rate: 0.79, available: true },
-      { from: 'USD', to: 'JPY', rate: 149.50, available: true },
-      { from: 'USDC', to: 'USD', rate: 1.0, available: true },
-      { from: 'EUR', to: 'USD', rate: 1.09, available: true },
-      { from: 'GBP', to: 'USD', rate: 1.27, available: true },
-    ];
+    // All Circle StableFX stablecoins can be exchanged with each other
+    const pairs: CurrencyPair[] = [];
+    const currencies = Object.keys(STABLECOINS) as Currency[];
+    
+    for (const from of currencies) {
+      for (const to of currencies) {
+        if (from !== to) {
+          const rate = await this.getExchangeRate(from, to);
+          pairs.push({ from, to, rate: rate.rate, available: true });
+        }
+      }
+    }
+    
+    return pairs;
   }
 
   /**
@@ -108,12 +142,13 @@ export class ExchangeService {
   async getExchangeHistory(userId: string, limit: number = 20): Promise<Exchange[]> {
     console.log(`Fetching exchange history for user: ${userId}`);
     
+    // Mock exchange history with Circle StableFX stablecoins
     return [
       {
         id: 'ex_1',
         userId,
-        fromCurrency: 'USD',
-        toCurrency: 'EUR',
+        fromCurrency: 'USDC',
+        toCurrency: 'EURC',
         fromAmount: 1000,
         toAmount: 920,
         rate: 0.92,
@@ -124,8 +159,8 @@ export class ExchangeService {
       {
         id: 'ex_2',
         userId,
-        fromCurrency: 'EUR',
-        toCurrency: 'USD',
+        fromCurrency: 'EURC',
+        toCurrency: 'USDC',
         fromAmount: 500,
         toAmount: 545,
         rate: 1.09,
