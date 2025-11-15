@@ -47,6 +47,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Validate address format
+    if (!ethers.isAddress(address)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid address format' },
+        { status: 400 }
+      )
+    }
+
     // Connect to ARC testnet
     const provider = new ethers.JsonRpcProvider(ARC_TESTNET_RPC)
 
@@ -54,11 +62,22 @@ export async function GET(request: NextRequest) {
     const balance = await provider.getBalance(address)
     const transactionCount = await provider.getTransactionCount(address)
 
+    // Get USDC balance
+    const USDC_CONTRACT = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+    const usdcAbi = [
+      'function balanceOf(address account) view returns (uint256)',
+      'function decimals() view returns (uint8)',
+    ]
+    const usdcContract = new ethers.Contract(USDC_CONTRACT, usdcAbi, provider)
+    const usdcBalance = await usdcContract.balanceOf(address)
+    const decimals = await usdcContract.decimals()
+
     return NextResponse.json({
       success: true,
       wallet: {
         address,
-        balance: ethers.formatEther(balance),
+        nativeBalance: ethers.formatEther(balance),
+        usdcBalance: ethers.formatUnits(usdcBalance, decimals),
         transactionCount,
       },
     })

@@ -2,60 +2,116 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter } from 'lucide-react'
+import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter, RefreshCw } from 'lucide-react'
 import { Button, Badge, Modal, Input } from '@/components/ui'
-import { accountService } from '@/modules/account/service'
-import type { Transaction, BalanceInfo } from '@/modules/account/types'
+
+interface WalletInfo {
+  address: string
+  nativeBalance: string
+  usdcBalance: string
+  transactionCount: number
+}
+
+interface Transaction {
+  hash: string
+  from: string
+  to: string
+  value: string
+  timestamp: number
+  blockNumber: number
+  status: 'success' | 'failed' | 'pending'
+  type: 'send' | 'receive' | 'deposit' | 'withdrawal'
+  amount: string
+  currency: string
+  gasUsed?: string
+  gasPrice?: string
+  fee?: string
+}
+
+interface TransactionReceipt {
+  hash: string
+  from: string
+  to: string | null
+  blockNumber: number
+  blockHash: string
+  timestamp: number
+  status: string
+  gasUsed: string
+  gasPrice: string
+  value: string
+  data: string
+}
 
 export default function AccountPage() {
-  const [balance, setBalance] = useState<BalanceInfo | null>(null)
+  const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [showSendModal, setShowSendModal] = useState(false)
   const [showReceiveModal, setShowReceiveModal] = useState(false)
+  const [showReceiptModal, setShowReceiptModal] = useState(false)
+  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null)
+  const [txReceipt, setTxReceipt] = useState<TransactionReceipt | null>(null)
   const [sendAmount, setSendAmount] = useState('')
   const [recipientAddress, setRecipientAddress] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'send' | 'receive'>('all')
+  const [error, setError] = useState<string | null>(null)
 
-  const walletAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb8'
+  // Use the wallet address from the problem statement
+  const walletAddress = '0x742D35cC6634C0532925A3b844bc9E7595f0BEb8'
 
   useEffect(() => {
-    loadAccountData()
+    loadWalletData()
   }, [])
 
-  const loadAccountData = async () => {
+  const loadWalletData = async () => {
     setIsLoading(true)
+    setError(null)
     try {
-      const balanceData = await accountService.getBalance(walletAddress)
-      const history = await accountService.getTransactionHistory(walletAddress, 1, 20)
+      // Fetch wallet info
+      const walletResponse = await fetch(`/api/wallet/create?address=${walletAddress}`)
+      const walletData = await walletResponse.json()
       
-      setBalance(balanceData)
-      setTransactions(history.transactions)
+      if (walletData.success) {
+        setWalletInfo(walletData.wallet)
+      } else {
+        throw new Error(walletData.error || 'Failed to load wallet')
+      }
+
+      // Fetch transaction history
+      const txResponse = await fetch(`/api/wallet/transactions?address=${walletAddress}&limit=50`)
+      const txData = await txResponse.json()
+      
+      if (txData.success) {
+        setTransactions(txData.transactions || [])
+      }
     } catch (error) {
-      console.error('Error loading account data:', error)
+      console.error('Error loading wallet data:', error)
+      setError(error instanceof Error ? error.message : 'Failed to load wallet data')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleSendTransaction = async () => {
-    if (!sendAmount || !recipientAddress) return
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    await loadWalletData()
+    setIsRefreshing(false)
+  }
+
+  const handleViewReceipt = async (tx: Transaction) => {
+    setSelectedTx(tx)
+    setShowReceiptModal(true)
     
     try {
-      const tx = await accountService.sendTransaction({
-        from: walletAddress,
-        to: recipientAddress,
-        amount: parseFloat(sendAmount),
-        currency: 'USDC'
-      })
+      const response = await fetch(`/api/wallet/receipt?hash=${tx.hash}`)
+      const data = await response.json()
       
-      setTransactions([tx, ...transactions])
-      setShowSendModal(false)
-      setSendAmount('')
-      setRecipientAddress('')
-      loadAccountData()
+      if (data.success) {
+        setTxReceipt(data.receipt)
+      }
     } catch (error) {
-      console.error('Error sending transaction:', error)
+      console.error('Error loading receipt:', error)
     }
   }
 
@@ -66,7 +122,7 @@ export default function AccountPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
+      case 'success':
         return <CheckCircle className="h-5 w-5 text-green-600" />
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-600" />
@@ -111,10 +167,27 @@ export default function AccountPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Account</h1>
-          <p className="text-gray-600 mt-2">Manage your USDC wallet and transactions on Circle ARC blockchain</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">ARC Smart Wallet</h1>
+            <p className="text-gray-600 mt-2">Manage your USDC wallet on Circle ARC blockchain</p>
+          </div>
+          <Button
+            onClick={handleRefresh}
+            variant="secondary"
+            disabled={isRefreshing}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
+
+        {error && (
+          <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
+        )}
 
         {/* Balance Card */}
         <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 rounded-xl shadow-2xl p-8 text-white mb-8 relative overflow-hidden">
@@ -122,12 +195,18 @@ export default function AccountPage() {
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <p className="text-blue-200 text-sm mb-1">Total Balance</p>
-                <h2 className="text-5xl font-bold">${balance?.balance.toFixed(2) || '0.00'}</h2>
-                <p className="text-blue-200 text-sm mt-1 flex items-center gap-2">
-                  USDC
-                  <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Stablecoin</Badge>
-                </p>
+                <p className="text-blue-200 text-sm mb-1">USDC Balance</p>
+                {isLoading ? (
+                  <div className="h-12 w-48 bg-white/20 rounded animate-pulse"></div>
+                ) : (
+                  <>
+                    <h2 className="text-5xl font-bold">${walletInfo?.usdcBalance || '0.00'}</h2>
+                    <p className="text-blue-200 text-sm mt-1 flex items-center gap-2">
+                      USDC on ARC Testnet
+                      <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Circle</Badge>
+                    </p>
+                  </>
+                )}
               </div>
               <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
                 <Wallet className="h-8 w-8 text-white" />
@@ -138,30 +217,46 @@ export default function AccountPage() {
               <p className="text-blue-200 text-sm mb-2">Wallet Address</p>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg">
                 <p className="font-mono text-sm flex-1">
-                  {walletAddress.slice(0, 10)}...{walletAddress.slice(-8)}
+                  {walletAddress}
                 </p>
                 <button 
                   onClick={() => copyToClipboard(walletAddress)}
                   className="text-white hover:text-blue-200 transition-colors"
+                  title="Copy address"
                 >
                   <Copy className="h-4 w-4" />
                 </button>
                 <a 
-                  href={`https://arc-testnet-explorer.circle.com/address/${walletAddress}`}
+                  href={`https://testnet.arcscan.app/address/${walletAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:text-blue-200 transition-colors"
+                  title="View on explorer"
                 >
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
             </div>
 
+            {!isLoading && walletInfo && (
+              <div className="mb-6 grid grid-cols-2 gap-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <p className="text-blue-200 text-xs mb-1">Native Balance</p>
+                  <p className="font-semibold">{parseFloat(walletInfo.nativeBalance).toFixed(4)} ETH</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                  <p className="text-blue-200 text-xs mb-1">Transactions</p>
+                  <p className="font-semibold">{walletInfo.transactionCount}</p>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <Button 
                 onClick={() => setShowSendModal(true)}
                 variant="ghost"
                 className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                disabled={isLoading}
               >
                 <Send className="h-5 w-5 mr-2" />
                 Send
@@ -199,12 +294,16 @@ export default function AccountPage() {
           {isLoading ? (
             <div className="text-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="text-gray-500 mt-2">Loading transactions...</p>
+              <p className="text-gray-500 mt-2">Loading transactions from blockchain...</p>
             </div>
           ) : filteredTransactions.length > 0 ? (
             <div className="space-y-4">
               {filteredTransactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors">
+                <div 
+                  key={tx.hash} 
+                  className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                  onClick={() => handleViewReceipt(tx)}
+                >
                   <div className="flex items-center flex-1">
                     <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
                       tx.type === 'receive' ? 'bg-green-100' : 'bg-blue-100'
@@ -223,11 +322,10 @@ export default function AccountPage() {
                         {getStatusIcon(tx.status)}
                       </div>
                       <p className="text-sm text-gray-500 font-mono">
-                        {tx.type === 'receive' && tx.from ? `From: ${tx.from.slice(0, 6)}...${tx.from.slice(-4)}` : ''}
-                        {tx.type === 'send' && tx.to ? `To: ${tx.to.slice(0, 6)}...${tx.to.slice(-4)}` : ''}
+                        {tx.type === 'receive' ? `From: ${tx.from.slice(0, 6)}...${tx.from.slice(-4)}` : `To: ${tx.to.slice(0, 6)}...${tx.to.slice(-4)}`}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {new Date(tx.timestamp).toLocaleString()}
+                        {new Date(tx.timestamp * 1000).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -235,18 +333,21 @@ export default function AccountPage() {
                     <p className={`font-semibold text-lg ${
                       tx.type === 'receive' ? 'text-green-600' : 'text-gray-900'
                     }`}>
-                      {tx.type === 'receive' ? '+' : '-'}${tx.amount.toFixed(2)}
+                      {tx.type === 'receive' ? '+' : '-'}{tx.amount}
                     </p>
                     <p className="text-sm text-gray-500">{tx.currency}</p>
-                    {tx.fee && (
-                      <p className="text-xs text-gray-400">Fee: ${tx.fee.toFixed(2)}</p>
+                    {tx.fee && parseFloat(tx.fee) > 0 && (
+                      <p className="text-xs text-gray-400">Fee: {parseFloat(tx.fee).toFixed(6)} ETH</p>
                     )}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No transactions yet</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500">No transactions found</p>
+              <p className="text-sm text-gray-400 mt-2">Transactions will appear here when you send or receive USDC</p>
+            </div>
           )}
         </div>
 
@@ -265,13 +366,47 @@ export default function AccountPage() {
             </p>
           </div>
           <div className="bg-purple-50 rounded-xl p-6">
-            <h4 className="font-semibold text-gray-900 mb-2">Account Abstraction</h4>
+            <h4 className="font-semibold text-gray-900 mb-2">Smart Wallet Features</h4>
             <p className="text-sm text-gray-600">
-              Enjoy gas-less transactions and enhanced security with smart contract wallet features.
+              Enjoy enhanced security, transaction batching, and seamless blockchain interactions.
             </p>
           </div>
         </div>
       </main>
+
+      {/* Receive Modal */}
+      <Modal
+        isOpen={showReceiveModal}
+        onClose={() => setShowReceiveModal(false)}
+        title="Receive USDC"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Share your wallet address to receive USDC on the ARC testnet:
+          </p>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <p className="font-mono text-sm break-all">{walletAddress}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => copyToClipboard(walletAddress)}
+              variant="primary"
+              fullWidth
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Address
+            </Button>
+            <Button
+              onClick={() => window.open(`https://testnet.arcscan.app/address/${walletAddress}`, '_blank')}
+              variant="secondary"
+              fullWidth
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View on Explorer
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Send Modal */}
       <Modal
@@ -302,55 +437,98 @@ export default function AccountPage() {
               onChange={(e) => setSendAmount(e.target.value)}
             />
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-600">Available Balance:</span>
-              <span className="font-semibold">${balance?.balance.toFixed(2) || '0.00'} USDC</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Network Fee:</span>
-              <span className="font-semibold">$0.01 USDC</span>
-            </div>
-          </div>
+          <p className="text-sm text-gray-500">
+            Note: You need to have the private key to send transactions. This is a demo showing wallet information and transaction history.
+          </p>
           <Button
-            onClick={handleSendTransaction}
             variant="primary"
             fullWidth
-            disabled={!sendAmount || !recipientAddress}
+            disabled
           >
             Send Transaction
           </Button>
         </div>
       </Modal>
 
-      {/* Receive Modal */}
+      {/* Transaction Receipt Modal */}
       <Modal
-        isOpen={showReceiveModal}
-        onClose={() => setShowReceiveModal(false)}
-        title="Receive USDC"
+        isOpen={showReceiptModal}
+        onClose={() => {
+          setShowReceiptModal(false)
+          setSelectedTx(null)
+          setTxReceipt(null)
+        }}
+        title="Transaction Receipt"
       >
-        <div className="space-y-4">
-          <p className="text-gray-600 text-sm">
-            Share your wallet address to receive USDC from others.
-          </p>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs text-gray-500 mb-2">Your Wallet Address</p>
-            <p className="font-mono text-sm break-all mb-4">{walletAddress}</p>
+        {selectedTx && (
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div>
+                <p className="text-xs text-gray-500 uppercase">Transaction Hash</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="font-mono text-sm break-all flex-1">{selectedTx.hash}</p>
+                  <button
+                    onClick={() => copyToClipboard(selectedTx.hash)}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">Status</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {getStatusIcon(selectedTx.status)}
+                    <span className="capitalize font-medium">{selectedTx.status}</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">Block</p>
+                  <p className="font-medium mt-1">#{selectedTx.blockNumber}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 uppercase">From</p>
+                <p className="font-mono text-sm mt-1 break-all">{selectedTx.from}</p>
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 uppercase">To</p>
+                <p className="font-mono text-sm mt-1 break-all">{selectedTx.to}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase">Amount</p>
+                  <p className="font-semibold text-lg mt-1">{selectedTx.amount} {selectedTx.currency}</p>
+                </div>
+                {selectedTx.fee && (
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase">Gas Fee</p>
+                    <p className="font-medium mt-1">{parseFloat(selectedTx.fee).toFixed(6)} ETH</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500 uppercase">Timestamp</p>
+                <p className="font-medium mt-1">{new Date(selectedTx.timestamp * 1000).toLocaleString()}</p>
+              </div>
+            </div>
+
             <Button
-              onClick={() => copyToClipboard(walletAddress)}
-              variant="secondary"
+              onClick={() => window.open(`https://testnet.arcscan.app/tx/${selectedTx.hash}`, '_blank')}
+              variant="primary"
               fullWidth
             >
-              <Copy className="h-5 w-5 mr-2" />
-              Copy Address
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View on ARC Explorer
             </Button>
           </div>
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-900">
-              ℹ️ Only send USDC on Circle ARC testnet to this address. Sending other tokens may result in loss of funds.
-            </p>
-          </div>
-        </div>
+        )}
       </Modal>
     </div>
   )
