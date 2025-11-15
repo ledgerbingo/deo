@@ -183,7 +183,7 @@ Card issuance process:
 # Circle ARC Blockchain
 NEXT_PUBLIC_CIRCLE_API_KEY=your_circle_api_key
 CIRCLE_API_KEY=your_circle_api_key
-NEXT_PUBLIC_ARC_TESTNET_RPC=https://arc-testnet-rpc.circle.com
+NEXT_PUBLIC_ARC_TESTNET_RPC=https://rpc.testnet.arc.network
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
@@ -202,6 +202,8 @@ NODE_ENV=development
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Project overview and status
 - **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Implementation details and statistics
 - **[ARC_WALLET_IMPLEMENTATION.md](ARC_WALLET_IMPLEMENTATION.md)** - ARC wallet features and integration
+- **[ARC_TESTNET_CONNECTION_UPDATE.md](ARC_TESTNET_CONNECTION_UPDATE.md)** - ARC testnet connection update details
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Guide for testing with real ARC testnet data
 
 ## Contributing
 
