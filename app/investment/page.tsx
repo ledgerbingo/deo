@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { TrendingUp, TrendingDown, DollarSign, PieChart, ArrowUpRight, ArrowDownRight, Plus, Search, Filter, RefreshCw, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, PieChart, ArrowUpRight, ArrowDownRight, Plus, Search, Filter, RefreshCw, CheckCircle, XCircle, AlertCircle, LineChart } from 'lucide-react'
 import { Button, Badge, Modal, Input, Navigation, Alert } from '@/components/ui'
 import { investmentService } from '@/modules/investment/service'
 import type { Portfolio, Asset, Trade } from '@/modules/investment/types'
+import { AssetChart } from '@/components/investment/AssetChart'
 
 export default function InvestmentPage() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null)
@@ -21,6 +22,7 @@ export default function InvestmentPage() {
   const [filterType, setFilterType] = useState<string>('all')
   const [tradeStatus, setTradeStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const [isExecutingTrade, setIsExecutingTrade] = useState(false)
+  const [selectedChartAsset, setSelectedChartAsset] = useState<Asset | null>(null)
 
   const userId = 'user_123'
 
@@ -246,7 +248,13 @@ export default function InvestmentPage() {
                         </div>
                         <div className="ml-4 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900 text-lg">{holding.asset.name}</p>
+                            <button
+                              onClick={() => setSelectedChartAsset(holding.asset)}
+                              className="font-semibold text-gray-900 text-lg hover:text-blue-600 transition-colors flex items-center gap-1"
+                            >
+                              {holding.asset.name}
+                              <LineChart className="h-4 w-4" />
+                            </button>
                             <Badge variant="default" size="sm">{holding.asset.symbol}</Badge>
                             <Badge variant="info" size="sm">{holding.asset.type}</Badge>
                           </div>
@@ -331,10 +339,13 @@ export default function InvestmentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredAssets.map((asset) => (
-                  <div key={asset.id} className="group border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all duration-200 bg-gradient-to-br hover:from-blue-50/30">
+                  <div key={asset.id} className="group border border-gray-200 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all duration-200 bg-gradient-to-br hover:from-blue-50/30 cursor-pointer" onClick={() => setSelectedChartAsset(asset)}>
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 text-lg">{asset.symbol}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-gray-900 text-lg">{asset.symbol}</p>
+                          <LineChart className="h-4 w-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
                         <p className="text-sm text-gray-500 mt-0.5">{asset.name}</p>
                       </div>
                       <Badge variant="default" size="sm">{asset.type}</Badge>
@@ -356,7 +367,10 @@ export default function InvestmentPage() {
                       </div>
                     </div>
                     <Button
-                      onClick={() => openTradeModal(asset, 'buy')}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openTradeModal(asset, 'buy')
+                      }}
                       variant="primary"
                       size="sm"
                       fullWidth
@@ -561,6 +575,14 @@ export default function InvestmentPage() {
           </div>
         )}
       </Modal>
+
+      {/* Asset Chart Modal */}
+      {selectedChartAsset && (
+        <AssetChart
+          asset={selectedChartAsset}
+          onClose={() => setSelectedChartAsset(null)}
+        />
+      )}
     </div>
   )
 }

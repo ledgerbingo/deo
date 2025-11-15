@@ -2,22 +2,28 @@
  * Investment Service
  * 
  * Manages investment portfolios and trading operations.
- * Uses dynamic demo data that simulates real market behavior.
+ * Fetches real-time prices from external APIs.
  */
 
 import { Portfolio, Asset, TradeRequest, Trade, PortfolioHolding, AssetType } from './types';
 
-// Simulate realistic price fluctuations
-const generatePriceVariation = (basePrice: number, volatility: number = 0.02): number => {
-  const variation = (Math.random() - 0.5) * 2 * volatility;
-  return basePrice * (1 + variation);
-};
+// Cache for real-time prices
+interface PriceCache {
+  [symbol: string]: {
+    price: number;
+    change24h: number;
+    timestamp: number;
+  };
+}
 
-// Base prices for assets (simulating realistic market prices)
-const BASE_PRICES: Record<string, number> = {
-  'BTC': 45000,
-  'ETH': 3000,
-  'SOL': 100,
+const priceCache: PriceCache = {};
+const CACHE_DURATION = 30000; // 30 seconds
+
+// Fallback base prices for assets (used if API fails)
+const FALLBACK_PRICES: Record<string, number> = {
+  'BTC': 96327.12,
+  'ETH': 3500,
+  'SOL': 150,
   'AAPL': 178,
   'GOOGL': 140,
   'MSFT': 380,
@@ -34,21 +40,100 @@ const portfolioStore: Record<string, PortfolioHolding[]> = {};
 
 export class InvestmentService {
   /**
-   * Get current market price for an asset (simulated with variation)
+   * Fetch real-time prices from API
    */
-  private getCurrentPrice(symbol: string): number {
-    const basePrice = BASE_PRICES[symbol] || 100;
-    return generatePriceVariation(basePrice, 0.015);
+  private async fetchRealTimePrices(symbols: string[]): Promise<void> {
+    try {
+      // Separate crypto and non-crypto symbols
+      const cryptoSymbols = symbols.filter(s => ['BTC', 'ETH', 'SOL'].includes(s));
+      const stockSymbols = symbols.filter(s => !['BTC', 'ETH', 'SOL'].includes(s));
+
+      // Fetch crypto prices
+      if (cryptoSymbols.length > 0) {
+        const cryptoResponse = await fetch(
+          `/api/prices/crypto?symbols=${cryptoSymbols.join(',')}`
+        );
+        if (cryptoResponse.ok) {
+          const cryptoData = await cryptoResponse.json();
+          for (const [symbol, data] of Object.entries(cryptoData.prices)) {
+            priceCache[symbol] = {
+              price: (data as any).price,
+              change24h: (data as any).change24h,
+              timestamp: Date.now(),
+            };
+          }
+        }
+      }
+
+      // Fetch stock/ETF/bond prices
+      if (stockSymbols.length > 0) {
+        const stockResponse = await fetch(
+          `/api/prices/stocks?symbols=${stockSymbols.join(',')}`
+        );
+        if (stockResponse.ok) {
+          const stockData = await stockResponse.json();
+          for (const [symbol, data] of Object.entries(stockData.prices)) {
+            priceCache[symbol] = {
+              price: (data as any).price,
+              change24h: (data as any).change24h,
+              timestamp: Date.now(),
+            };
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching real-time prices:', error);
+    }
   }
 
   /**
-   * Get 24h change for an asset (simulated)
+   * Get current market price for an asset (real-time or cached)
    */
-  private get24hChange(symbol: string): { change24h: number; changePercentage: number } {
-    const currentPrice = BASE_PRICES[symbol] || 100;
-    const changePercentage = (Math.random() - 0.5) * 10; // -5% to +5%
-    const change24h = currentPrice * (changePercentage / 100);
-    return { change24h, changePercentage };
+  private async getCurrentPrice(symbol: string): Promise<number> {
+    // Check cache first
+    const cached = priceCache[symbol];
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.price;
+    }
+
+    // Fetch fresh data
+    await this.fetchRealTimePrices([symbol]);
+    
+    // Return cached data if available, otherwise fallback
+    return priceCache[symbol]?.price || FALLBACK_PRICES[symbol] || 100;
+  }
+
+  /**
+   * Get 24h change for an asset (real-time or cached)
+   */
+  private async get24hChange(symbol: string): Promise<{ change24h: number; changePercentage: number }> {
+    // Check cache first
+    const cached = priceCache[symbol];
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return { 
+        change24h: cached.change24h,
+        changePercentage: cached.change24h
+      };
+    }
+
+    // Fetch fresh data
+    await this.fetchRealTimePrices([symbol]);
+    
+    // Return cached data if available, otherwise generate fallback
+    if (priceCache[symbol]) {
+      return {
+        change24h: priceCache[symbol].change24h,
+        changePercentage: priceCache[symbol].change24h,
+      };
+    }
+    
+    // Fallback to simulated data
+    const currentPrice = FALLBACK_PRICES[symbol] || 100;
+    const changePercentage = (Math.random() - 0.5) * 10;
+    return { 
+      change24h: changePercentage,
+      changePercentage 
+    };
   }
 
   /**
@@ -69,15 +154,15 @@ export class InvestmentService {
             symbol: 'BTC',
             name: 'Bitcoin',
             type: 'crypto',
-            currentPrice: 45000,
-            change24h: 1200,
-            changePercentage: 2.74,
+            currentPrice: 96327.12,
+            change24h: 2.5,
+            changePercentage: 2.5,
           },
           quantity: 0.5,
-          averageCost: 42000,
-          currentValue: 22500,
-          totalReturn: 1500,
-          returnPercentage: 7.14,
+          averageCost: 94000,
+          currentValue: 48163.56,
+          totalReturn: 1163.56,
+          returnPercentage: 2.48,
         },
         {
           asset: {
@@ -85,41 +170,49 @@ export class InvestmentService {
             symbol: 'ETH',
             name: 'Ethereum',
             type: 'crypto',
-            currentPrice: 3000,
-            change24h: -50,
-            changePercentage: -1.64,
+            currentPrice: 3500,
+            change24h: -1.2,
+            changePercentage: -1.2,
           },
           quantity: 2,
-          averageCost: 2800,
-          currentValue: 6000,
-          totalReturn: 400,
-          returnPercentage: 7.14,
+          averageCost: 3400,
+          currentValue: 7000,
+          totalReturn: 200,
+          returnPercentage: 2.94,
         },
       ];
     }
 
-    // Update holdings with current prices
-    const mockHoldings: PortfolioHolding[] = portfolioStore[userId].map(holding => {
-      const currentPrice = this.getCurrentPrice(holding.asset.symbol);
-      const { change24h, changePercentage } = this.get24hChange(holding.asset.symbol);
-      const currentValue = currentPrice * holding.quantity;
-      const totalCost = holding.averageCost * holding.quantity;
-      const totalReturn = currentValue - totalCost;
-      const returnPercentage = (totalReturn / totalCost) * 100;
+    // Get all unique symbols from holdings
+    const symbols = portfolioStore[userId].map(h => h.asset.symbol);
+    
+    // Fetch latest prices for all symbols
+    await this.fetchRealTimePrices(symbols);
 
-      return {
-        ...holding,
-        asset: {
-          ...holding.asset,
-          currentPrice,
-          change24h,
-          changePercentage,
-        },
-        currentValue,
-        totalReturn,
-        returnPercentage,
-      };
-    });
+    // Update holdings with current prices
+    const mockHoldings: PortfolioHolding[] = await Promise.all(
+      portfolioStore[userId].map(async (holding) => {
+        const currentPrice = await this.getCurrentPrice(holding.asset.symbol);
+        const { change24h, changePercentage } = await this.get24hChange(holding.asset.symbol);
+        const currentValue = currentPrice * holding.quantity;
+        const totalCost = holding.averageCost * holding.quantity;
+        const totalReturn = currentValue - totalCost;
+        const returnPercentage = (totalReturn / totalCost) * 100;
+
+        return {
+          ...holding,
+          asset: {
+            ...holding.asset,
+            currentPrice,
+            change24h,
+            changePercentage,
+          },
+          currentValue,
+          totalReturn,
+          returnPercentage,
+        };
+      })
+    );
 
     const totalValue = mockHoldings.reduce((sum, h) => sum + h.currentValue, 0);
     const totalCost = mockHoldings.reduce((sum, h) => sum + (h.averageCost * h.quantity), 0);
@@ -163,16 +256,22 @@ export class InvestmentService {
       { id: 'tlt', symbol: 'TLT', name: '20+ Year Treasury Bond ETF', type: 'bond' },
     ];
 
-    return assetDefinitions.map(asset => {
-      const currentPrice = this.getCurrentPrice(asset.symbol);
-      const { change24h, changePercentage } = this.get24hChange(asset.symbol);
-      return {
-        ...asset,
-        currentPrice,
-        change24h,
-        changePercentage,
-      };
-    });
+    // Fetch real-time prices for all assets
+    const symbols = assetDefinitions.map(a => a.symbol);
+    await this.fetchRealTimePrices(symbols);
+
+    return await Promise.all(
+      assetDefinitions.map(async (asset) => {
+        const currentPrice = await this.getCurrentPrice(asset.symbol);
+        const { change24h, changePercentage } = await this.get24hChange(asset.symbol);
+        return {
+          ...asset,
+          currentPrice,
+          change24h,
+          changePercentage,
+        };
+      })
+    );
   }
 
   /**
