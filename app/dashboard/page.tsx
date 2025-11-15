@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, TrendingUp, Repeat, Bell, Settings, HelpCircle, Plus, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { Button, Badge, DashboardSkeleton, Navigation } from '@/components/ui'
+import { useWallet } from '@/lib/context/WalletContext'
 
 interface Transaction {
   id: string
@@ -17,8 +18,9 @@ interface Transaction {
 }
 
 export default function Dashboard() {
+  const { activeWallet, isLoading: walletLoading, createWallet, wallets } = useWallet()
   const [balance, setBalance] = useState<number>(0)
-  const [walletAddress, setWalletAddress] = useState<string>('0x742D35cC6634C0532925A3b844bc9E7595f0BEb8')
+  const [walletAddress, setWalletAddress] = useState<string>('')
   const [isKYCVerified, setIsKYCVerified] = useState<boolean>(false)
   const [hasCard, setHasCard] = useState<boolean>(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -26,10 +28,15 @@ export default function Dashboard() {
   const [unreadNotifications, setUnreadNotifications] = useState<number>(3)
 
   useEffect(() => {
-    loadWalletData()
-  }, [])
+    if (activeWallet) {
+      setWalletAddress(activeWallet.address)
+      loadWalletData()
+    }
+  }, [activeWallet])
 
   const loadWalletData = async () => {
+    if (!walletAddress) return
+    
     setIsLoading(true)
     try {
       // Fetch wallet info
@@ -70,12 +77,19 @@ export default function Dashboard() {
   }
 
   const handleCreateWallet = async () => {
+    if (wallets.length >= 5) {
+      alert('Maximum of 5 wallets reached')
+      return
+    }
+    
     setIsLoading(true)
-    // Simulate wallet creation
-    setTimeout(() => {
-      setWalletAddress('0x' + Math.random().toString(16).substr(2, 40))
+    try {
+      await createWallet()
+    } catch (error) {
+      alert('Failed to create wallet')
+    } finally {
       setIsLoading(false)
-    }, 2000)
+    }
   }
 
   const handleStartKYC = () => {
@@ -88,12 +102,44 @@ export default function Dashboard() {
     alert('Card issuance initiated. You will receive your virtual card within minutes.')
   }
 
-  if (isLoading && !walletAddress) {
+  if (walletLoading || (isLoading && !walletAddress)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <DashboardSkeleton />
+        </main>
+      </div>
+    )
+  }
+
+  // Show wallet creation prompt if no wallet exists
+  if (!activeWallet) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        <Navigation />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="bg-white rounded-3xl shadow-xl p-12 max-w-md text-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-6">
+                <Wallet className="h-10 w-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to DEO Finance</h2>
+              <p className="text-gray-600 mb-8">
+                Create your first smart wallet to get started. You can create up to 5 wallets to manage your finances.
+              </p>
+              <Button
+                onClick={handleCreateWallet}
+                disabled={isLoading}
+                variant="primary"
+                fullWidth
+                className="bg-purple-600 hover:bg-purple-700 py-4 text-lg"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                {isLoading ? 'Creating Wallet...' : 'Create Your First Wallet'}
+              </Button>
+            </div>
+          </div>
         </main>
       </div>
     )

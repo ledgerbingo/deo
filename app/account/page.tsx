@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter, RefreshCw } from 'lucide-react'
+import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter, RefreshCw, Plus, Edit2, Trash2 } from 'lucide-react'
 import { Button, Badge, Modal, Input, Navigation } from '@/components/ui'
+import { useWallet } from '@/lib/context/WalletContext'
 
 interface WalletInfo {
   address: string
@@ -43,6 +44,7 @@ interface TransactionReceipt {
 }
 
 export default function AccountPage() {
+  const { activeWallet, wallets, createWallet, updateWallet, setActiveWallet } = useWallet()
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -50,21 +52,28 @@ export default function AccountPage() {
   const [showSendModal, setShowSendModal] = useState(false)
   const [showReceiveModal, setShowReceiveModal] = useState(false)
   const [showReceiptModal, setShowReceiptModal] = useState(false)
+  const [showManageModal, setShowManageModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null)
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt | null>(null)
   const [sendAmount, setSendAmount] = useState('')
   const [recipientAddress, setRecipientAddress] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'send' | 'receive'>('all')
   const [error, setError] = useState<string | null>(null)
+  const [editingWalletName, setEditingWalletName] = useState('')
+  const [isCreatingWallet, setIsCreatingWallet] = useState(false)
 
-  // Use the wallet address from the problem statement
-  const walletAddress = '0x742D35cC6634C0532925A3b844bc9E7595f0BEb8'
+  const walletAddress = activeWallet?.address || ''
 
   useEffect(() => {
-    loadWalletData()
-  }, [])
+    if (walletAddress) {
+      loadWalletData()
+    }
+  }, [walletAddress])
 
   const loadWalletData = async () => {
+    if (!walletAddress) return
+    
     setIsLoading(true)
     setError(null)
     try {
@@ -142,6 +151,68 @@ export default function AccountPage() {
     filterType === 'all' || tx.type === filterType
   )
 
+  const handleCreateNewWallet = async () => {
+    if (wallets.length >= 5) {
+      alert('Maximum of 5 wallets reached')
+      return
+    }
+    
+    setIsCreatingWallet(true)
+    try {
+      await createWallet()
+      setShowManageModal(false)
+    } catch (error) {
+      alert('Failed to create wallet')
+    } finally {
+      setIsCreatingWallet(false)
+    }
+  }
+
+  const handleEditWallet = () => {
+    if (activeWallet && editingWalletName.trim()) {
+      updateWallet(activeWallet.id, { name: editingWalletName.trim() })
+      setShowEditModal(false)
+      setEditingWalletName('')
+    }
+  }
+
+  const handleSwitchWallet = (walletId: string) => {
+    setActiveWallet(walletId)
+    setShowManageModal(false)
+  }
+
+  // Show create wallet prompt if no wallet
+  if (!activeWallet) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        <Navigation />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="bg-white rounded-3xl shadow-xl p-12 max-w-md text-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-6">
+                <Wallet className="h-10 w-10 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Create Your Wallet</h2>
+              <p className="text-gray-600 mb-8">
+                Get started by creating your first smart wallet. You can create up to 5 wallets.
+              </p>
+              <Button
+                onClick={handleCreateNewWallet}
+                disabled={isCreatingWallet}
+                variant="primary"
+                fullWidth
+                className="bg-purple-600 hover:bg-purple-700 py-4 text-lg"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                {isCreatingWallet ? 'Creating...' : 'Create Wallet'}
+              </Button>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Navigation */}
@@ -154,15 +225,25 @@ export default function AccountPage() {
             <h1 className="text-3xl font-bold text-gray-900">ARC Smart Wallet</h1>
             <p className="text-gray-600 mt-2">Manage your USDC wallet on Circle ARC blockchain</p>
           </div>
-          <Button
-            onClick={handleRefresh}
-            variant="secondary"
-            disabled={isRefreshing}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowManageModal(true)}
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <Wallet className="h-4 w-4" />
+              Manage Wallets ({wallets.length}/5)
+            </Button>
+            <Button
+              onClick={handleRefresh}
+              variant="secondary"
+              disabled={isRefreshing}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -172,18 +253,19 @@ export default function AccountPage() {
         )}
 
         {/* Balance Card */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 rounded-xl shadow-2xl p-8 text-white mb-8 relative overflow-hidden">
+        <div className={`bg-gradient-to-br ${activeWallet?.color || 'from-blue-600 to-purple-700'} rounded-xl shadow-2xl p-8 text-white mb-8 relative overflow-hidden`}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <p className="text-blue-200 text-sm mb-1">USDC Balance</p>
+                <p className="text-white/70 text-sm mb-1">{activeWallet?.name}</p>
+                <p className="text-white/70 text-sm mb-1">USDC Balance</p>
                 {isLoading ? (
                   <div className="h-12 w-48 bg-white/20 rounded animate-pulse"></div>
                 ) : (
                   <>
                     <h2 className="text-5xl font-bold">${walletInfo?.usdcBalance || '0.00'}</h2>
-                    <p className="text-blue-200 text-sm mt-1 flex items-center gap-2">
+                    <p className="text-white/70 text-sm mt-1 flex items-center gap-2">
                       USDC on ARC Testnet
                       <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Circle</Badge>
                     </p>
@@ -196,14 +278,14 @@ export default function AccountPage() {
             </div>
             
             <div className="mb-6">
-              <p className="text-blue-200 text-sm mb-2">Wallet Address</p>
+              <p className="text-white/70 text-sm mb-2">Wallet Address</p>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg">
                 <p className="font-mono text-sm flex-1">
                   {walletAddress}
                 </p>
                 <button 
                   onClick={() => copyToClipboard(walletAddress)}
-                  className="text-white hover:text-blue-200 transition-colors"
+                  className="text-white hover:text-white/70 transition-colors"
                   title="Copy address"
                 >
                   <Copy className="h-4 w-4" />
@@ -212,7 +294,7 @@ export default function AccountPage() {
                   href={`https://testnet.arcscan.app/address/${walletAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-blue-200 transition-colors"
+                  className="text-white hover:text-white/70 transition-colors"
                   title="View on explorer"
                 >
                   <ExternalLink className="h-4 w-4" />
@@ -223,11 +305,11 @@ export default function AccountPage() {
             {!isLoading && walletInfo && (
               <div className="mb-6 grid grid-cols-2 gap-4">
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <p className="text-blue-200 text-xs mb-1">Native Balance</p>
+                  <p className="text-white/70 text-xs mb-1">Native Balance</p>
                   <p className="font-semibold">{parseFloat(walletInfo.nativeBalance).toFixed(4)} ETH</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <p className="text-blue-200 text-xs mb-1">Transactions</p>
+                  <p className="text-white/70 text-xs mb-1">Transactions</p>
                   <p className="font-semibold">{walletInfo.transactionCount}</p>
                 </div>
               </div>
@@ -511,6 +593,129 @@ export default function AccountPage() {
             </Button>
           </div>
         )}
+      </Modal>
+
+      {/* Wallet Management Modal */}
+      <Modal
+        isOpen={showManageModal}
+        onClose={() => setShowManageModal(false)}
+        title="Manage Wallets"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            You can create up to 5 smart wallets. Switch between them or create a new one.
+          </p>
+          
+          <div className="space-y-2">
+            {wallets.map((wallet, index) => (
+              <div
+                key={wallet.id}
+                className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                  activeWallet?.id === wallet.id
+                    ? 'border-purple-600 bg-purple-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${wallet.color} flex items-center justify-center flex-shrink-0`}>
+                    <Wallet className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{wallet.name}</p>
+                      {activeWallet?.id === wallet.id && (
+                        <Badge variant="success" size="sm">Active</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 font-mono truncate">
+                      {wallet.address}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setEditingWalletName(wallet.name)
+                      setShowManageModal(false)
+                      setShowEditModal(true)
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Edit wallet name"
+                  >
+                    <Edit2 className="h-4 w-4 text-gray-600" />
+                  </button>
+                  {activeWallet?.id !== wallet.id && (
+                    <Button
+                      onClick={() => handleSwitchWallet(wallet.id)}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Switch
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {wallets.length < 5 && (
+            <Button
+              onClick={handleCreateNewWallet}
+              disabled={isCreatingWallet}
+              variant="primary"
+              fullWidth
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {isCreatingWallet ? 'Creating...' : 'Create New Wallet'}
+            </Button>
+          )}
+        </div>
+      </Modal>
+
+      {/* Edit Wallet Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+          setEditingWalletName('')
+        }}
+        title="Edit Wallet Name"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Wallet Name
+            </label>
+            <Input
+              type="text"
+              placeholder="My Wallet"
+              value={editingWalletName}
+              onChange={(e) => setEditingWalletName(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleEditWallet}
+              variant="primary"
+              fullWidth
+              disabled={!editingWalletName.trim()}
+            >
+              Save Changes
+            </Button>
+            <Button
+              onClick={() => {
+                setShowEditModal(false)
+                setEditingWalletName('')
+                setShowManageModal(true)
+              }}
+              variant="secondary"
+              fullWidth
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   )
