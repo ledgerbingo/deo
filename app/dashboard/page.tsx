@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, RefreshCw, TrendingUp, Repeat, Bell, Settings, HelpCircle } from 'lucide-react'
+import { Wallet, CreditCard, Send, ArrowUpRight, ArrowDownLeft, DollarSign, Shield, TrendingUp, Repeat, Bell, Settings, HelpCircle, Plus, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
+import { Button, Badge, DashboardSkeleton } from '@/components/ui'
 
 interface Transaction {
   id: string
@@ -76,19 +77,28 @@ export default function Dashboard() {
 
   if (isLoading && !walletAddress) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <RefreshCw className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex justify-between items-center">
+              <Link href="/" className="flex items-center">
+                <DollarSign className="h-8 w-8 text-blue-600" />
+                <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
+              </Link>
+            </div>
+          </nav>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DashboardSkeleton />
+        </main>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center">
@@ -96,29 +106,29 @@ export default function Dashboard() {
               <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/investment" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+              <Link href="/investment" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 <TrendingUp className="h-5 w-5 inline mr-1" />
                 Invest
               </Link>
-              <Link href="/exchange" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+              <Link href="/exchange" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 <Repeat className="h-5 w-5 inline mr-1" />
                 Exchange
               </Link>
-              <Link href="/support" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+              <Link href="/support" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 <HelpCircle className="h-5 w-5 inline" />
               </Link>
               <Link href="/settings" className="relative">
-                <Bell className="h-6 w-6 text-gray-700 hover:text-blue-600" />
+                <Bell className="h-6 w-6 text-gray-700 hover:text-blue-600 transition-colors" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                     {unreadNotifications}
                   </span>
                 )}
               </Link>
               <Link href="/settings">
-                <Settings className="h-6 w-6 text-gray-700 hover:text-blue-600" />
+                <Settings className="h-6 w-6 text-gray-700 hover:text-blue-600 transition-colors" />
               </Link>
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold shadow-lg">
                 U
               </div>
             </div>
@@ -135,44 +145,52 @@ export default function Dashboard() {
 
         {/* Quick Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Portfolio Value</p>
+                <p className="text-sm text-gray-600 mb-1">Portfolio Value</p>
                 <p className="text-2xl font-bold text-gray-900">$28,500</p>
-                <p className="text-sm text-green-600">+7.14%</p>
+                <Badge variant="success" size="sm" className="mt-2">+7.14%</Badge>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Monthly Spending</p>
+                <p className="text-sm text-gray-600 mb-1">Monthly Spending</p>
                 <p className="text-2xl font-bold text-gray-900">$1,250</p>
-                <p className="text-sm text-gray-500">Via DEO Card</p>
+                <p className="text-sm text-gray-500 mt-2">Via DEO Card</p>
               </div>
-              <CreditCard className="h-8 w-8 text-blue-600" />
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <CreditCard className="h-6 w-6 text-blue-600" />
+              </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-purple-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Exchanged</p>
+                <p className="text-sm text-gray-600 mb-1">Exchanged</p>
                 <p className="text-2xl font-bold text-gray-900">$2,500</p>
-                <p className="text-sm text-gray-500">This month</p>
+                <p className="text-sm text-gray-500 mt-2">This month</p>
               </div>
-              <Repeat className="h-8 w-8 text-purple-600" />
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Repeat className="h-6 w-6 text-purple-600" />
+              </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Active Services</p>
+                <p className="text-sm text-gray-600 mb-1">Active Services</p>
                 <p className="text-2xl font-bold text-gray-900">8</p>
-                <p className="text-sm text-gray-500">All operational</p>
+                <Badge variant="success" size="sm" className="mt-2">All operational</Badge>
               </div>
-              <Shield className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Shield className="h-6 w-6 text-green-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -180,89 +198,112 @@ export default function Dashboard() {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Balance Card */}
-          <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg p-8 text-white">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <p className="text-blue-200 text-sm mb-1">Total Balance</p>
-                <h2 className="text-4xl font-bold">${balance.toFixed(2)}</h2>
-                <p className="text-blue-200 text-sm mt-1">USDC</p>
+          <div className="lg:col-span-2 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-700 rounded-xl shadow-2xl p-8 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <p className="text-blue-200 text-sm mb-1">Total Balance</p>
+                  <h2 className="text-5xl font-bold">${balance.toFixed(2)}</h2>
+                  <p className="text-blue-200 text-sm mt-1 flex items-center gap-2">
+                    USDC
+                    <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Stablecoin</Badge>
+                  </p>
+                </div>
+                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <Wallet className="h-8 w-8 text-white" />
+                </div>
               </div>
-              <Wallet className="h-12 w-12 text-blue-200" />
-            </div>
-            
-            {walletAddress ? (
-              <div className="mb-6">
-                <p className="text-blue-200 text-sm mb-1">Wallet Address</p>
-                <p className="font-mono text-sm bg-blue-800 bg-opacity-50 px-3 py-2 rounded">
-                  {walletAddress.slice(0, 10)}...{walletAddress.slice(-8)}
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={handleCreateWallet}
-                className="mb-6 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-              >
-                Create Wallet
-              </button>
-            )}
+              
+              {walletAddress ? (
+                <div className="mb-6">
+                  <p className="text-blue-200 text-sm mb-2">Wallet Address</p>
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg">
+                    <p className="font-mono text-sm flex-1">
+                      {walletAddress.slice(0, 10)}...{walletAddress.slice(-8)}
+                    </p>
+                    <button className="text-white hover:text-blue-200 transition-colors">
+                      <ExternalLink className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleCreateWallet}
+                  className="mb-6 bg-white text-blue-600 hover:bg-blue-50"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create Wallet
+                </Button>
+              )}
 
-            <div className="flex gap-4">
-              <button className="flex-1 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-3 rounded-lg font-medium flex items-center justify-center transition-colors">
-                <Send className="h-5 w-5 mr-2" />
-                Send
-              </button>
-              <button className="flex-1 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-3 rounded-lg font-medium flex items-center justify-center transition-colors">
-                <ArrowDownLeft className="h-5 w-5 mr-2" />
-                Receive
-              </button>
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  variant="ghost"
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                >
+                  <Send className="h-5 w-5 mr-2" />
+                  Send
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                >
+                  <ArrowDownLeft className="h-5 w-5 mr-2" />
+                  Receive
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Quick Actions */}
           <div className="space-y-6">
             {/* KYC Status */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-purple-200">
               <div className="flex items-center mb-4">
-                <Shield className="h-6 w-6 text-purple-600 mr-2" />
+                <div className="p-2 bg-purple-100 rounded-lg mr-3">
+                  <Shield className="h-5 w-5 text-purple-600" />
+                </div>
                 <h3 className="text-lg font-semibold text-gray-900">Identity Verification</h3>
               </div>
               {isKYCVerified ? (
-                <div className="text-green-600 font-medium">✓ Verified</div>
+                <Badge variant="success" className="w-full justify-center py-2">✓ Verified</Badge>
               ) : (
                 <div>
                   <p className="text-gray-600 text-sm mb-4">Complete KYC to unlock all features</p>
-                  <button
+                  <Button
                     onClick={handleStartKYC}
-                    className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                    variant="primary"
+                    fullWidth
+                    className="bg-purple-600 hover:bg-purple-700 focus:ring-purple-500"
                   >
                     Start Verification
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
 
             {/* Card Status */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-transparent hover:border-green-200">
               <div className="flex items-center mb-4">
-                <CreditCard className="h-6 w-6 text-green-600 mr-2" />
+                <div className="p-2 bg-green-100 rounded-lg mr-3">
+                  <CreditCard className="h-5 w-5 text-green-600" />
+                </div>
                 <h3 className="text-lg font-semibold text-gray-900">DEO Card</h3>
               </div>
               {hasCard ? (
-                <div className="text-green-600 font-medium">✓ Active</div>
+                <Badge variant="success" className="w-full justify-center py-2">✓ Active</Badge>
               ) : (
                 <div>
                   <p className="text-gray-600 text-sm mb-4">Get a virtual or physical card</p>
-                  <button
+                  <Button
                     onClick={handleRequestCard}
                     disabled={!isKYCVerified}
-                    className={`w-full px-4 py-2 rounded-lg font-medium transition-colors ${
-                      isKYCVerified
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                    variant={isKYCVerified ? "success" : "secondary"}
+                    fullWidth
                   >
                     {isKYCVerified ? 'Request Card' : 'KYC Required'}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
