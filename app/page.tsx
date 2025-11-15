@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Navigation } from '@/components/ui'
 import { Wallet, CreditCard, Shield, ArrowRight, DollarSign, Lock, TrendingUp, Zap, Globe, Award, Smartphone } from 'lucide-react'
 
 export default function Home() {
@@ -9,33 +10,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full nubank-gradient flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-              <span className="ml-3 text-2xl font-bold text-gray-900">DEO</span>
-            </div>
-            <div className="flex items-center space-x-8">
-              <Link href="/dashboard" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
-                For you
-              </Link>
-              <Link href="/card" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
-                Cards
-              </Link>
-              <Link href="/exchange" className="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors">
-                Services
-              </Link>
-              <Link href="/dashboard" className="bg-purple-600 text-white hover:bg-purple-700 px-6 py-2.5 rounded-full text-sm font-medium transition-all hover:shadow-lg">
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation */}
+      <Navigation />
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -3,6 +3,7 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --nubank-purple: 130, 10, 209;
+  --nubank-purple-light: 168, 85, 247;
   --background-white: 255, 255, 255;
 }
 
@@ -34,5 +35,20 @@ body {
   .hover-lift:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(130, 10, 209, 0.2);
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
   }
 }
