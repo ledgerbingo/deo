@@ -2,9 +2,32 @@
  * Exchange Module Types
  * 
  * Defines types for currency exchange operations.
+ * Focused on Circle StableFX supported stablecoins.
  */
 
-export type Currency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'USDC' | 'BTC' | 'ETH';
+// Circle StableFX supported stablecoins
+export type Currency = 
+  | 'USDC'  // US Dollar - Circle
+  | 'EURC'  // Euro - Circle
+  | 'AUDF'  // Australian Dollar - Forte
+  | 'BRLA'  // Brazilian Real - Avenia
+  | 'JPYC'  // Japanese Yen - JPYC Inc.
+  | 'KRW1'  // South Korean Won - BDACS
+  | 'MXNB'  // Mexican Peso - Bitso
+  | 'PHPC'  // Philippine Peso - Coins.PH
+  | 'QCAD'  // Canadian Dollar - Stablecorp
+  | 'ZARU'; // South African Rand - ZAR Universal Network
+
+export interface StablecoinInfo {
+  symbol: Currency;
+  name: string;
+  issuer: string;
+  country: string;
+  countryCode: string;
+  fiatCurrency: string;
+  fiatSymbol: string;
+  icon?: string;
+}
 
 export interface ExchangeRate {
   from: Currency;

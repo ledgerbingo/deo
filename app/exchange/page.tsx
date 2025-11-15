@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { Repeat, DollarSign, TrendingUp, ArrowRight, RefreshCw, History, Globe, Zap, Shield, Clock } from 'lucide-react'
 import { Button, Badge, Input, Navigation, CurrencyIcon, CurrencyBadge } from '@/components/ui'
 import { exchangeService } from '@/modules/exchange/service'
+import { STABLECOINS, CURRENCY_LIST } from '@/modules/exchange/stablecoins'
 import type { Exchange, ExchangeRate, Currency } from '@/modules/exchange/types'
 
 export default function ExchangePage() {
-  const [fromCurrency, setFromCurrency] = useState<Currency>('USD')
-  const [toCurrency, setToCurrency] = useState<Currency>('USDC')
+  const [fromCurrency, setFromCurrency] = useState<Currency>('USDC')
+  const [toCurrency, setToCurrency] = useState<Currency>('EURC')
   const [fromAmount, setFromAmount] = useState('')
   const [toAmount, setToAmount] = useState('')
   const [exchangeRate, setExchangeRate] = useState<ExchangeRate | null>(null)
@@ -19,7 +20,7 @@ export default function ExchangePage() {
 
   const userId = 'user_123'
   
-  const currencies: Currency[] = ['USD', 'EUR', 'GBP', 'JPY', 'USDC', 'BTC', 'ETH']
+  const currencies: Currency[] = CURRENCY_LIST
   const [isSwapping, setIsSwapping] = useState(false)
 
   useEffect(() => {
@@ -360,19 +361,49 @@ export default function ExchangePage() {
           </div>
         </div>
 
-        {/* Supported Currencies - Enhanced */}
+        {/* Supported Currencies - Enhanced with Circle StableFX stablecoins */}
         <div className="mt-8 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Supported Currencies</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
-            {currencies.map(currency => (
-              <div key={currency} className="group">
-                <div className="flex flex-col items-center p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer">
-                  <CurrencyIcon currency={currency} size="md" showBadge={false} />
-                  <p className="font-bold text-gray-900 mt-3">{currency}</p>
-                  <p className="text-xs text-gray-500 mt-1">Available</p>
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Circle StableFX Supported Stablecoins</h3>
+            <p className="text-gray-600">Institutional-grade onchain FX engine supporting stablecoins from trusted issuers worldwide</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {currencies.map(currency => {
+              const info = STABLECOINS[currency];
+              return (
+                <div key={currency} className="group">
+                  <div className="flex flex-col p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer h-full">
+                    <div className="flex items-center justify-center mb-4">
+                      <CurrencyIcon currency={currency} size="lg" showBadge={false} />
+                    </div>
+                    <div className="text-center mb-3">
+                      <p className="font-bold text-xl text-gray-900 mb-1">{currency}</p>
+                      <p className="text-xs text-gray-600 font-medium mb-2">{info.name}</p>
+                    </div>
+                    <div className="border-t border-gray-200 pt-3 space-y-2 text-xs">
+                      <div>
+                        <p className="text-gray-500 uppercase tracking-wide font-semibold mb-1">Issuer</p>
+                        <p className="text-gray-900 font-medium">{info.issuer}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 uppercase tracking-wide font-semibold mb-1">Currency</p>
+                        <p className="text-gray-900 font-medium">{info.fiatCurrency} ({info.fiatSymbol})</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 uppercase tracking-wide font-semibold mb-1">Country</p>
+                        <p className="text-gray-900 font-medium">{info.country}</p>
+                      </div>
+                    </div>
+                    <div className="mt-auto pt-3">
+                      <div className="flex items-center justify-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1.5 rounded-full">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                        <span className="font-medium">Available 24/7</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </main>
