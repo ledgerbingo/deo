@@ -15,7 +15,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'US',
     fiatCurrency: 'US Dollar',
     fiatSymbol: 'USD',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b5a_usdc.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e32623d6fb8a115ba95d0_USDC.svg',
   },
   EURC: {
     symbol: 'EURC',
@@ -25,7 +25,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'EU',
     fiatCurrency: 'Euro',
     fiatSymbol: 'EUR',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b5c_eurc.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e3262fef474cc84154fd8_EURC.svg',
   },
   AUDF: {
     symbol: 'AUDF',
@@ -45,7 +45,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'BR',
     fiatCurrency: 'Brazilian Real',
     fiatSymbol: 'BRL',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b59_brla.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e32632cbeda9382cfc725_avenia-brla.png',
   },
   JPYC: {
     symbol: 'JPYC',
@@ -55,7 +55,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'JP',
     fiatCurrency: 'Japanese Yen',
     fiatSymbol: 'JPY',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b5e_jpyc.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/691541f9b2bdc4a89c944fe0_jpyc-token.png',
   },
   KRW1: {
     symbol: 'KRW1',
@@ -65,7 +65,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'KR',
     fiatCurrency: 'South Korean Won',
     fiatSymbol: 'KRW',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b5f_krw1.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e32635ac6a2542a414c52_krw1.png',
   },
   MXNB: {
     symbol: 'MXNB',
@@ -75,7 +75,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'MX',
     fiatCurrency: 'Mexican Peso',
     fiatSymbol: 'MXN',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b60_mxnb.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e32628ebd65f5cd314829_mxnb.svg',
   },
   PHPC: {
     symbol: 'PHPC',
@@ -85,7 +85,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'PH',
     fiatCurrency: 'Philippine Peso',
     fiatSymbol: 'PHP',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b61_phpc.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326303b1b083f6b4a3f9_phpc.png',
   },
   QCAD: {
     symbol: 'QCAD',
@@ -95,7 +95,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'CA',
     fiatCurrency: 'Canadian Dollar',
     fiatSymbol: 'CAD',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b62_qcad.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326349711a9e87ccd1d2_qcad.png',
   },
   ZARU: {
     symbol: 'ZARU',
@@ -105,7 +105,7 @@ export const STABLECOINS: Record<Currency, StablecoinInfo> = {
     countryCode: 'ZA',
     fiatCurrency: 'South African Rand',
     fiatSymbol: 'ZAR',
-    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/690e326269c046ed0c3b2b63_zaru.svg',
+    icon: 'https://cdn.prod.website-files.com/67116d0daddc92483c812e88/691541f922cb8383555eca7f_zaru-token.png',
   },
 };
 

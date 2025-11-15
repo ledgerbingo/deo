@@ -18,53 +18,36 @@ export class ExchangeService {
   async getExchangeRate(from: Currency, to: Currency): Promise<ExchangeRate> {
     console.log(`Fetching exchange rate: ${from} -> ${to}`);
     
-    // Mock exchange rates for Circle StableFX stablecoins
+    // If from and to are the same, return 1.0
+    if (from === to) {
+      return {
+        from,
+        to,
+        rate: 1.0,
+        lastUpdated: new Date(),
+      };
+    }
+    
+    // Base exchange rates from USDC to all other currencies
     // In production, these would come from Circle StableFX API
-    const rates: Record<string, number> = {
-      // USDC pairs
-      'USDC-EURC': 0.92,
-      'USDC-AUDF': 1.52,
-      'USDC-BRLA': 5.71,
-      'USDC-JPYC': 149.50,
-      'USDC-KRW1': 1320.50,
-      'USDC-MXNB': 17.25,
-      'USDC-PHPC': 56.50,
-      'USDC-QCAD': 1.36,
-      'USDC-ZARU': 18.95,
-      
-      // EURC pairs
-      'EURC-USDC': 1.09,
-      'EURC-AUDF': 1.65,
-      'EURC-BRLA': 6.21,
-      'EURC-JPYC': 163.04,
-      'EURC-KRW1': 1436.50,
-      'EURC-MXNB': 18.78,
-      'EURC-PHPC': 61.52,
-      'EURC-QCAD': 1.48,
-      'EURC-ZARU': 20.63,
-      
-      // Other pairs (reverse of above)
-      'AUDF-USDC': 0.66,
-      'BRLA-USDC': 0.18,
-      'JPYC-USDC': 0.0067,
-      'KRW1-USDC': 0.00076,
-      'MXNB-USDC': 0.058,
-      'PHPC-USDC': 0.018,
-      'QCAD-USDC': 0.74,
-      'ZARU-USDC': 0.053,
-      
-      'AUDF-EURC': 0.61,
-      'BRLA-EURC': 0.16,
-      'JPYC-EURC': 0.0061,
-      'KRW1-EURC': 0.00070,
-      'MXNB-EURC': 0.053,
-      'PHPC-EURC': 0.016,
-      'QCAD-EURC': 0.68,
-      'ZARU-EURC': 0.048,
+    const usdcRates: Record<Currency, number> = {
+      USDC: 1.0,
+      EURC: 0.92,
+      AUDF: 1.52,
+      BRLA: 5.71,
+      JPYC: 149.50,
+      KRW1: 1320.50,
+      MXNB: 17.25,
+      PHPC: 56.50,
+      QCAD: 1.36,
+      ZARU: 18.95,
     };
 
-    const key = `${from}-${to}`;
-    const rate = rates[key] || 1.0;
+    // Calculate exchange rate using USDC as the base currency
+    // Rate from A to B = (1 / rate_USDC_to_A) * rate_USDC_to_B
+    const fromRate = usdcRates[from];
+    const toRate = usdcRates[to];
+    const rate = toRate / fromRate;
 
     return {
       from,
