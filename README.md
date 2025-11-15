@@ -6,11 +6,15 @@ DEO Finance provides next-generation financial services powered by USDC stableco
 
 ## Features
 
-### 🔐 USDC Wallet with Account Abstraction
-- Create secure USDC wallets on Circle's ARC blockchain testnet
-- Account abstraction for improved user experience
+### 🔐 ARC Smart Wallet with Real-Time Blockchain Integration
+- Full-featured USDC wallet on Circle's ARC blockchain testnet
+- Real-time balance tracking directly from blockchain
+- Complete transaction history with USDC transfer events
+- Detailed transaction receipts with gas fees and timestamps
 - Send and receive USDC stablecoin
-- Real-time balance tracking
+- Transaction filtering (all, sent, received)
+- Direct links to ARC testnet block explorer (testnet.arcscan.app)
+- Account abstraction for improved user experience
 
 ### 💳 Stripe Card Issuance
 - Virtual and physical card issuance powered by Stripe
@@ -29,6 +33,8 @@ DEO Finance provides next-generation financial services powered by USDC stableco
 - Fast transaction processing
 - Low transaction fees
 - Secure and reliable infrastructure
+- Direct blockchain data querying
+- USDC ERC-20 token support
 
 ## Tech Stack
 
@@ -117,7 +123,10 @@ deo/
 ### Wallet APIs
 
 - `POST /api/wallet/create` - Create a new wallet
+- `GET /api/wallet/create?address={address}` - Get wallet information (balance, transaction count)
 - `GET /api/wallet/balance?address={address}` - Get USDC balance
+- `GET /api/wallet/transactions?address={address}&limit={limit}` - Get transaction history
+- `GET /api/wallet/receipt?hash={txHash}` - Get transaction receipt details
 - `POST /api/wallet/transfer` - Transfer USDC
 
 ### Stripe APIs
@@ -129,12 +138,13 @@ deo/
 
 ## Key Features Implementation
 
-### Account Abstraction Wallet
-The wallet implementation uses ethers.js to interact with the ARC blockchain. Account abstraction provides:
-- Gas-less transactions
-- Social recovery
-- Batch transactions
-- Custom transaction logic
+### ARC Smart Wallet
+The wallet implementation uses ethers.js to interact directly with the ARC blockchain:
+- **Real-time balance queries**: Fetches USDC balance from the ERC-20 contract
+- **Transaction history**: Retrieves Transfer events from the blockchain
+- **Transaction receipts**: Provides detailed receipt information including gas fees
+- **Block explorer integration**: Links to testnet.arcscan.app for transaction verification
+- **Account abstraction support**: Enhanced security and user experience features
 
 ### Stripe Identity Integration
 KYC verification flow:

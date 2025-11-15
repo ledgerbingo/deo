@@ -18,7 +18,7 @@ interface Transaction {
 
 export default function Dashboard() {
   const [balance, setBalance] = useState<number>(0)
-  const [walletAddress, setWalletAddress] = useState<string>('')
+  const [walletAddress, setWalletAddress] = useState<string>('0x742D35cC6634C0532925A3b844bc9E7595f0BEb8')
   const [isKYCVerified, setIsKYCVerified] = useState<boolean>(false)
   const [hasCard, setHasCard] = useState<boolean>(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -26,35 +26,43 @@ export default function Dashboard() {
   const [unreadNotifications, setUnreadNotifications] = useState<number>(3)
 
   useEffect(() => {
-    // Simulate loading wallet data
-    setTimeout(() => {
-      setWalletAddress('0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb8')
-      setBalance(1250.50)
-      setIsKYCVerified(false)
-      setHasCard(false)
-      setTransactions([
-        {
-          id: '1',
-          type: 'receive',
-          amount: 500,
-          currency: 'USDC',
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          status: 'completed',
-          from: '0x123...456'
-        },
-        {
-          id: '2',
-          type: 'send',
-          amount: 150,
-          currency: 'USDC',
-          timestamp: new Date(Date.now() - 172800000).toISOString(),
-          status: 'completed',
-          to: '0x789...abc'
-        },
-      ])
-      setIsLoading(false)
-    }, 1000)
+    loadWalletData()
   }, [])
+
+  const loadWalletData = async () => {
+    setIsLoading(true)
+    try {
+      // Fetch wallet info
+      const walletResponse = await fetch(`/api/wallet/create?address=${walletAddress}`)
+      const walletData = await walletResponse.json()
+      
+      if (walletData.success) {
+        setBalance(parseFloat(walletData.wallet.usdcBalance))
+      }
+
+      // Fetch transaction history
+      const txResponse = await fetch(`/api/wallet/transactions?address=${walletAddress}&limit=10`)
+      const txData = await txResponse.json()
+      
+      if (txData.success && txData.transactions) {
+        const formattedTxs = txData.transactions.map((tx: any) => ({
+          id: tx.hash,
+          type: tx.type as 'send' | 'receive',
+          amount: parseFloat(tx.amount),
+          currency: tx.currency,
+          timestamp: new Date(tx.timestamp * 1000).toISOString(),
+          status: tx.status as 'completed' | 'pending',
+          from: tx.from,
+          to: tx.to
+        }))
+        setTransactions(formattedTxs)
+      }
+    } catch (error) {
+      console.error('Error loading wallet data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleCreateWallet = async () => {
     setIsLoading(true)
@@ -214,26 +222,31 @@ export default function Dashboard() {
                   <p className="text-blue-200 text-sm mb-1">Total Balance</p>
                   <h2 className="text-5xl font-bold">${balance.toFixed(2)}</h2>
                   <p className="text-blue-200 text-sm mt-1 flex items-center gap-2">
-                    USDC
+                    USDC on ARC Testnet
                     <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Stablecoin</Badge>
                   </p>
                 </div>
-                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-                  <Wallet className="h-8 w-8 text-white" />
-                </div>
+                <Link href="/account">
+                  <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer">
+                    <Wallet className="h-8 w-8 text-white" />
+                  </div>
+                </Link>
               </div>
               
               {walletAddress ? (
                 <div className="mb-6">
                   <p className="text-blue-200 text-sm mb-2">Wallet Address</p>
-                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg">
+                  <a 
+                    href={`https://testnet.arcscan.app/address/${walletAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg hover:bg-white/20 transition-colors"
+                  >
                     <p className="font-mono text-sm flex-1">
                       {walletAddress.slice(0, 10)}...{walletAddress.slice(-8)}
                     </p>
-                    <button className="text-white hover:text-blue-200 transition-colors">
-                      <ExternalLink className="h-4 w-4" />
-                    </button>
-                  </div>
+                    <ExternalLink className="h-4 w-4 text-white" />
+                  </a>
                 </div>
               ) : (
                 <Button
