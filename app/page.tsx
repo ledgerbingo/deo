@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Wallet, CreditCard, Shield, ArrowRight, DollarSign, Lock, TrendingUp } from 'lucide-react'
+import { Wallet, CreditCard, Shield, ArrowRight, DollarSign, Lock, TrendingUp, Zap, Globe, Award } from 'lucide-react'
 
 export default function Home() {
   const [email, setEmail] = useState('')
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -18,10 +18,10 @@ export default function Home() {
               <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
             </div>
             <div className="flex space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+              <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 Dashboard
               </Link>
-              <Link href="/dashboard" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium">
+              <Link href="/dashboard" className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium transition-all hover:shadow-lg">
                 Get Started
               </Link>
             </div>
@@ -31,10 +31,16 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
+        <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6">
+            <Zap className="h-4 w-4" />
+            <span>Powered by Circle ARC Blockchain & Stripe</span>
+          </div>
           <h1 className="text-5xl font-extrabold text-gray-900 sm:text-6xl md:text-7xl">
             <span className="block">Next-Gen Finance</span>
-            <span className="block text-blue-600">Powered by USDC & ARC</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+              Powered by USDC & ARC
+            </span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-xl text-gray-600">
             Experience comprehensive financial services on Circle's ARC blockchain. 
@@ -47,18 +53,34 @@ export default function Home() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow"
               />
-              <Link href="/dashboard" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 flex items-center">
+              <Link href="/dashboard" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 flex items-center transition-all hover:shadow-lg hover:scale-105">
                 Start <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="mt-12 flex items-center justify-center gap-8 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span>Bank-level Security</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award className="h-4 w-4" />
+              <span>Fully Licensed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              <span>Global Coverage</span>
             </div>
           </div>
         </div>
 
         {/* Features */}
         <div className="mt-24 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-blue-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-600 text-white mb-4">
               <Wallet className="h-6 w-6" />
             </div>
@@ -69,7 +91,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-green-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-green-600 text-white mb-4">
               <CreditCard className="h-6 w-6" />
             </div>
@@ -80,7 +102,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-purple-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-purple-600 text-white mb-4">
               <Shield className="h-6 w-6" />
             </div>
@@ -91,7 +113,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-indigo-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-600 text-white mb-4">
               <Lock className="h-6 w-6" />
             </div>
@@ -102,7 +124,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-yellow-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-yellow-600 text-white mb-4">
               <TrendingUp className="h-6 w-6" />
             </div>
@@ -113,7 +135,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-red-200">
             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white mb-4">
               <DollarSign className="h-6 w-6" />
             </div>
@@ -126,16 +148,19 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-24 bg-blue-600 rounded-2xl shadow-2xl p-12 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Transform Your Financial Experience?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join DEO Finance today and experience the future of digital finance
-          </p>
-          <Link href="/dashboard" className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-            Launch Dashboard <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+        <div className="mt-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-2xl p-12 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,black)]"></div>
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Ready to Transform Your Financial Experience?
+            </h2>
+            <p className="text-xl text-blue-100 mb-8">
+              Join DEO Finance today and experience the future of digital finance
+            </p>
+            <Link href="/dashboard" className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-all hover:shadow-xl hover:scale-105">
+              Launch Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
         </div>
       </main>
 
