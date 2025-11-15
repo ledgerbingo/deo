@@ -195,6 +195,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 NODE_ENV=development
 ```
 
+## Documentation
+
+- **[SERVICE_INTEGRATION.md](SERVICE_INTEGRATION.md)** - Detailed guide on how module services connect to APIs
+- **[MODULAR_DESIGN.md](MODULAR_DESIGN.md)** - Architecture and module catalog
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Project overview and status
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Implementation details and statistics
+- **[ARC_WALLET_IMPLEMENTATION.md](ARC_WALLET_IMPLEMENTATION.md)** - ARC wallet features and integration
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
