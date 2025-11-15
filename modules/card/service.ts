@@ -320,7 +320,9 @@ export class CardService {
   async freezeCard(cardId: string): Promise<Card> {
     // Check if it's a demo card
     if (cardId.startsWith('demo_')) {
-      const userId = cardId.split('_')[1]; // Extract userId from demo card ID
+      // Extract userId from demo card ID (format: demo_userId_timestamp)
+      const parts = cardId.split('_');
+      const userId = parts.slice(1, -1).join('_'); // Get everything between 'demo_' and the timestamp
       const updated = this.updateDemoCard(cardId, userId, { status: 'frozen' });
       if (!updated) throw new Error('Demo card not found');
       return updated;
@@ -358,7 +360,9 @@ export class CardService {
   async unfreezeCard(cardId: string): Promise<Card> {
     // Check if it's a demo card
     if (cardId.startsWith('demo_')) {
-      const userId = cardId.split('_')[1]; // Extract userId from demo card ID
+      // Extract userId from demo card ID (format: demo_userId_timestamp)
+      const parts = cardId.split('_');
+      const userId = parts.slice(1, -1).join('_'); // Get everything between 'demo_' and the timestamp
       const updated = this.updateDemoCard(cardId, userId, { status: 'active' });
       if (!updated) throw new Error('Demo card not found');
       return updated;
@@ -396,7 +400,9 @@ export class CardService {
   async cancelCard(cardId: string): Promise<Card> {
     // Check if it's a demo card
     if (cardId.startsWith('demo_')) {
-      const userId = cardId.split('_')[1]; // Extract userId from demo card ID
+      // Extract userId from demo card ID (format: demo_userId_timestamp)
+      const parts = cardId.split('_');
+      const userId = parts.slice(1, -1).join('_'); // Get everything between 'demo_' and the timestamp
       const updated = this.updateDemoCard(cardId, userId, { status: 'cancelled' });
       if (!updated) throw new Error('Demo card not found');
       return updated;
