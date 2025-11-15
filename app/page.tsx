@@ -143,7 +143,7 @@ export default function Home() {
           </div>
           <div className="mt-8 pt-8 border-t border-gray-200 text-center">
             <p className="text-sm text-gray-500">
-              © 2024 DEO Finance. Built on Circle's ARC Blockchain. Powered by Stripe.
+              © 2025 DEO Finance. Built on Circle's ARC Blockchain. Powered by Stripe.
             </p>
           </div>
         </div>
