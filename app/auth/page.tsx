@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 import { DollarSign, Mail, Lock, Chrome, Github, Eye, EyeOff } from 'lucide-react'
 import { Button, Input, Alert } from '@/components/ui'
 
@@ -27,14 +28,40 @@ export default function AuthPage() {
     }, 1500)
   }
 
-  const handleSocialAuth = (provider: string) => {
+  const handleGoogleAuth = async () => {
     setLoading(true)
-    // In production, this would use the auth module's social login
-    setTimeout(() => {
+    setError('')
+    
+    try {
+      // Use NextAuth to sign in with Google
+      const result = await signIn('google', {
+        callbackUrl: '/account',
+        redirect: true,
+      })
+      
+      if (result?.error) {
+        setError('Failed to sign in with Google')
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error('Google auth error:', err)
+      setError('An error occurred during authentication')
       setLoading(false)
-      console.log(`Social auth with ${provider}`)
-      alert(`Redirecting to ${provider} authentication...`)
-    }, 1000)
+    }
+  }
+
+  const handleSocialAuth = (provider: string) => {
+    if (provider === 'Google') {
+      handleGoogleAuth()
+    } else {
+      setLoading(true)
+      // Other social providers not yet implemented
+      setTimeout(() => {
+        setLoading(false)
+        console.log(`Social auth with ${provider}`)
+        alert(`${provider} authentication coming soon!`)
+      }, 1000)
+    }
   }
 
   return (
