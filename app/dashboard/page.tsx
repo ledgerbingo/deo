@@ -106,6 +106,14 @@ export default function Dashboard() {
               <span className="ml-2 text-2xl font-bold text-gray-900">DEO Finance</span>
             </Link>
             <div className="flex items-center space-x-4">
+              <Link href="/account" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <Wallet className="h-5 w-5 inline mr-1" />
+                Account
+              </Link>
+              <Link href="/card" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <CreditCard className="h-5 w-5 inline mr-1" />
+                Cards
+              </Link>
               <Link href="/investment" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 <TrendingUp className="h-5 w-5 inline mr-1" />
                 Invest
@@ -238,20 +246,24 @@ export default function Dashboard() {
               )}
 
               <div className="grid grid-cols-2 gap-4">
-                <Button 
-                  variant="ghost"
-                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-                >
-                  <Send className="h-5 w-5 mr-2" />
-                  Send
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-                >
-                  <ArrowDownLeft className="h-5 w-5 mr-2" />
-                  Receive
-                </Button>
+                <Link href="/account">
+                  <Button 
+                    variant="ghost"
+                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full"
+                  >
+                    <Send className="h-5 w-5 mr-2" />
+                    Send
+                  </Button>
+                </Link>
+                <Link href="/account">
+                  <Button
+                    variant="ghost"
+                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full"
+                  >
+                    <ArrowDownLeft className="h-5 w-5 mr-2" />
+                    Receive
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -292,18 +304,21 @@ export default function Dashboard() {
                 <h3 className="text-lg font-semibold text-gray-900">DEO Card</h3>
               </div>
               {hasCard ? (
-                <Badge variant="success" className="w-full justify-center py-2">✓ Active</Badge>
+                <Link href="/card">
+                  <Badge variant="success" className="w-full justify-center py-2">✓ Active - View Cards</Badge>
+                </Link>
               ) : (
                 <div>
                   <p className="text-gray-600 text-sm mb-4">Get a virtual or physical card</p>
-                  <Button
-                    onClick={handleRequestCard}
-                    disabled={!isKYCVerified}
-                    variant={isKYCVerified ? "success" : "secondary"}
-                    fullWidth
-                  >
-                    {isKYCVerified ? 'Request Card' : 'KYC Required'}
-                  </Button>
+                  <Link href="/card">
+                    <Button
+                      disabled={!isKYCVerified}
+                      variant={isKYCVerified ? "success" : "secondary"}
+                      fullWidth
+                    >
+                      {isKYCVerified ? 'Request Card' : 'KYC Required'}
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
