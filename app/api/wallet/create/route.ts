@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
         address: wallet.address,
         // Never expose private key in production!
         // This is for demo purposes only
+        privateKey: wallet.privateKey,
         mnemonic: wallet.mnemonic?.phrase,
         userId,
       },

@@ -54,6 +54,8 @@ export default function AccountPage() {
   const [showReceiptModal, setShowReceiptModal] = useState(false)
   const [showManageModal, setShowManageModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null)
   const [txReceipt, setTxReceipt] = useState<TransactionReceipt | null>(null)
   const [sendAmount, setSendAmount] = useState('')
@@ -62,6 +64,10 @@ export default function AccountPage() {
   const [error, setError] = useState<string | null>(null)
   const [editingWalletName, setEditingWalletName] = useState('')
   const [isCreatingWallet, setIsCreatingWallet] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [txStatus, setTxStatus] = useState<'pending' | 'success' | 'failed' | null>(null)
+  const [txHash, setTxHash] = useState<string | null>(null)
+  const [txError, setTxError] = useState<string | null>(null)
 
   const walletAddress = activeWallet?.address || ''
 
@@ -179,6 +185,127 @@ export default function AccountPage() {
   const handleSwitchWallet = (walletId: string) => {
     setActiveWallet(walletId)
     setShowManageModal(false)
+  }
+
+  const handleSendClick = () => {
+    // Reset form
+    setRecipientAddress('')
+    setSendAmount('')
+    setError(null)
+    setShowSendModal(true)
+  }
+
+  const validateSendForm = (): boolean => {
+    if (!recipientAddress || !recipientAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+      setError('Please enter a valid Ethereum address')
+      return false
+    }
+    
+    const amount = parseFloat(sendAmount)
+    if (!sendAmount || isNaN(amount) || amount <= 0) {
+      setError('Please enter a valid amount greater than 0')
+      return false
+    }
+    
+    const balance = parseFloat(walletInfo?.usdcBalance || '0')
+    if (amount > balance) {
+      setError(`Insufficient balance. You have ${balance.toFixed(2)} USDC`)
+      return false
+    }
+    
+    if (!activeWallet?.mnemonic && !activeWallet?.privateKey) {
+      setError('No private key or mnemonic found for this wallet')
+      return false
+    }
+    
+    return true
+  }
+
+  const handleConfirmSend = () => {
+    setError(null)
+    
+    if (!validateSendForm()) {
+      return
+    }
+    
+    setShowSendModal(false)
+    setShowConfirmModal(true)
+  }
+
+  const handleExecuteSend = async () => {
+    if (!activeWallet) return
+    
+    setIsSending(true)
+    setTxStatus('pending')
+    setTxHash(null)
+    setTxError(null)
+    setShowConfirmModal(false)
+    setShowStatusModal(true)
+    
+    try {
+      // Derive private key from mnemonic if needed
+      let privateKey = activeWallet.privateKey
+      
+      if (!privateKey && activeWallet.mnemonic) {
+        // Import ethers to derive private key from mnemonic
+        const { ethers } = await import('ethers')
+        const wallet = ethers.Wallet.fromPhrase(activeWallet.mnemonic)
+        privateKey = wallet.privateKey
+      }
+      
+      if (!privateKey) {
+        throw new Error('No private key available')
+      }
+      
+      const response = await fetch('/api/wallet/transfer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: activeWallet.address,
+          to: recipientAddress,
+          amount: sendAmount,
+          privateKey: privateKey,
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Transfer failed')
+      }
+      
+      setTxHash(data.transaction.hash)
+      setTxStatus('success')
+      
+      // Refresh wallet data after successful transfer
+      setTimeout(() => {
+        loadWalletData()
+      }, 2000)
+    } catch (err) {
+      console.error('Transfer error:', err)
+      setTxError(err instanceof Error ? err.message : 'Transfer failed')
+      setTxStatus('failed')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const handleCloseSendModal = () => {
+    setShowSendModal(false)
+    setRecipientAddress('')
+    setSendAmount('')
+    setError(null)
+  }
+
+  const handleCloseStatusModal = () => {
+    setShowStatusModal(false)
+    setTxStatus(null)
+    setTxHash(null)
+    setTxError(null)
+    setRecipientAddress('')
+    setSendAmount('')
   }
 
   // Show create wallet prompt if no wallet
@@ -317,7 +444,7 @@ export default function AccountPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <Button 
-                onClick={() => setShowSendModal(true)}
+                onClick={handleSendClick}
                 variant="ghost"
                 className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
                 disabled={isLoading}
@@ -475,7 +602,7 @@ export default function AccountPage() {
       {/* Send Modal */}
       <Modal
         isOpen={showSendModal}
-        onClose={() => setShowSendModal(false)}
+        onClose={handleCloseSendModal}
         title="Send USDC"
       >
         <div className="space-y-4">
@@ -487,30 +614,208 @@ export default function AccountPage() {
               type="text"
               placeholder="0x..."
               value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
+              onChange={(e) => {
+                setRecipientAddress(e.target.value)
+                setError(null)
+              }}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Amount (USDC)
             </label>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={sendAmount}
-              onChange={(e) => setSendAmount(e.target.value)}
-            />
+            <div className="relative">
+              <Input
+                type="number"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                value={sendAmount}
+                onChange={(e) => {
+                  setSendAmount(e.target.value)
+                  setError(null)
+                }}
+              />
+              {walletInfo && (
+                <div className="mt-1 text-sm text-gray-500">
+                  Available: {parseFloat(walletInfo.usdcBalance).toFixed(2)} USDC
+                </div>
+              )}
+            </div>
           </div>
-          <p className="text-sm text-gray-500">
-            Note: You need to have the private key to send transactions. This is a demo showing wallet information and transaction history.
-          </p>
-          <Button
-            variant="primary"
-            fullWidth
-            disabled
-          >
-            Send Transaction
-          </Button>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-800 text-sm">{error}</p>
+            </div>
+          )}
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-blue-800 text-sm">
+              <strong>Note:</strong> Transactions are sent using the private key stored in your browser. Make sure you trust this device.
+            </p>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              onClick={handleCloseSendModal}
+              variant="secondary"
+              fullWidth
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmSend}
+              variant="primary"
+              fullWidth
+              disabled={!recipientAddress || !sendAmount}
+            >
+              Review Transaction
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        title="Confirm Transaction"
+      >
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+            <div className="text-center mb-4">
+              <div className="text-3xl font-bold text-gray-900">
+                {sendAmount} USDC
+              </div>
+              <p className="text-sm text-gray-600 mt-1">Will be sent to</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4 mb-4">
+              <p className="text-xs text-gray-500 uppercase mb-1">Recipient</p>
+              <p className="font-mono text-sm break-all">{recipientAddress}</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-4">
+              <p className="text-xs text-gray-500 uppercase mb-1">From</p>
+              <p className="font-mono text-sm break-all">{walletAddress}</p>
+            </div>
+          </div>
+          
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-yellow-800 text-sm">
+              <strong>⚠️ Warning:</strong> This transaction cannot be reversed. Please verify the recipient address before proceeding.
+            </p>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowConfirmModal(false)}
+              variant="secondary"
+              fullWidth
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleExecuteSend}
+              variant="primary"
+              fullWidth
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Confirm & Send
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Transaction Status Modal */}
+      <Modal
+        isOpen={showStatusModal}
+        onClose={txStatus === 'pending' ? undefined : handleCloseStatusModal}
+        dismissable={txStatus !== 'pending'}
+        title={
+          txStatus === 'pending' ? 'Processing Transaction' :
+          txStatus === 'success' ? 'Transaction Successful' :
+          'Transaction Failed'
+        }
+      >
+        <div className="space-y-4">
+          {txStatus === 'pending' && (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mb-4"></div>
+              <p className="text-gray-700 font-medium">Sending transaction...</p>
+              <p className="text-sm text-gray-500 mt-2">Please wait while we process your transfer</p>
+            </div>
+          )}
+          
+          {txStatus === 'success' && txHash && (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <p className="text-gray-900 font-semibold text-lg mb-2">Transfer Complete!</p>
+              <p className="text-gray-600 mb-4">
+                {sendAmount} USDC has been sent successfully
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-xs text-gray-500 uppercase mb-2">Transaction Hash</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-sm break-all flex-1">{txHash}</p>
+                  <button
+                    onClick={() => copyToClipboard(txHash)}
+                    className="text-blue-600 hover:text-blue-700"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => window.open(`https://testnet.arcscan.app/tx/${txHash}`, '_blank')}
+                  variant="secondary"
+                  fullWidth
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View on Explorer
+                </Button>
+                <Button
+                  onClick={handleCloseStatusModal}
+                  variant="primary"
+                  fullWidth
+                >
+                  Done
+                </Button>
+              </div>
+            </div>
+          )}
+          
+          {txStatus === 'failed' && (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <XCircle className="h-10 w-10 text-red-600" />
+              </div>
+              <p className="text-gray-900 font-semibold text-lg mb-2">Transaction Failed</p>
+              <p className="text-gray-600 mb-4">
+                {txError || 'An error occurred while processing your transfer'}
+              </p>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <p className="text-red-800 text-sm">
+                  {txError || 'Please check your balance and try again'}
+                </p>
+              </div>
+              
+              <Button
+                onClick={handleCloseStatusModal}
+                variant="primary"
+                fullWidth
+              >
+                Close
+              </Button>
+            </div>
+          )}
         </div>
       </Modal>
 
