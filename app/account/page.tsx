@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter, RefreshCw, Plus, Edit2, Trash2 } from 'lucide-react'
 import { Button, Badge, Modal, Input, Navigation } from '@/components/ui'
 import { useWallet } from '@/lib/context/WalletContext'
+import CircleWalletSection from '@/components/wallet/CircleWalletSection'
 
 interface WalletInfo {
   address: string
@@ -563,6 +564,9 @@ export default function AccountPage() {
             </p>
           </div>
         </div>
+
+        {/* Circle Wallet Section - Added separately below existing wallet */}
+        <CircleWalletSection />
       </main>
 
       {/* Receive Modal */}

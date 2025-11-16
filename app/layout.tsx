@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { WalletProvider } from '@/lib/context/WalletContext'
+import SessionProvider from '@/components/providers/SessionProvider'
 
 export const metadata: Metadata = {
   title: 'DEO Finance - USDC Stablecoin Services on ARC Blockchain',
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <WalletProvider>
-          {children}
-        </WalletProvider>
+        <SessionProvider>
+          <WalletProvider>
+            {children}
+          </WalletProvider>
+        </SessionProvider>
       </body>
     </html>
   )

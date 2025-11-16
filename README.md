@@ -16,6 +16,16 @@ DEO Finance provides next-generation financial services powered by USDC stableco
 - Direct links to ARC testnet block explorer (testnet.arcscan.app)
 - Account abstraction for improved user experience
 
+### 🌐 Circle Developer-Controlled Wallets (NEW)
+- Google OAuth authentication with NextAuth.js
+- Circle SDK integration for developer-controlled wallets
+- Wallets linked to Google accounts for easy access
+- Built on Circle's ARC blockchain testnet
+- Smart Contract Account (SCA) type wallets
+- Full balance and transaction history
+- Secure challenge-based security model
+- Separate wallet section on account page
+
 ### 💳 Stripe Card Issuance
 - Virtual and physical card issuance powered by Stripe
 - Instant card generation
@@ -41,6 +51,8 @@ DEO Finance provides next-generation financial services powered by USDC stableco
 - **Frontend**: Next.js 14 with React 19
 - **Styling**: Tailwind CSS
 - **Blockchain**: Circle ARC Testnet, ethers.js
+- **Circle SDK**: @circle-fin/user-controlled-wallets
+- **Authentication**: NextAuth.js with Google OAuth
 - **Payments**: Stripe (Identity, Card Issuing)
 - **Language**: TypeScript
 - **Icons**: Lucide React
@@ -185,6 +197,17 @@ NEXT_PUBLIC_CIRCLE_API_KEY=your_circle_api_key
 CIRCLE_API_KEY=your_circle_api_key
 NEXT_PUBLIC_ARC_TESTNET_RPC=https://rpc.testnet.arc.network
 
+# Circle User-Controlled Wallets
+CIRCLE_ENTITY_SECRET=your_circle_entity_secret
+CIRCLE_APP_ID=your_circle_app_id
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
@@ -197,6 +220,7 @@ NODE_ENV=development
 
 ## Documentation
 
+- **[GOOGLE_LOGIN_CIRCLE_WALLET.md](GOOGLE_LOGIN_CIRCLE_WALLET.md)** - NEW: Google Login and Circle wallet integration guide
 - **[SERVICE_INTEGRATION.md](SERVICE_INTEGRATION.md)** - Detailed guide on how module services connect to APIs
 - **[MODULAR_DESIGN.md](MODULAR_DESIGN.md)** - Architecture and module catalog
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Project overview and status
