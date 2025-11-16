@@ -125,9 +125,9 @@ export default function Dashboard() {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-6">
                 <Wallet className="h-10 w-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to DEO Finance</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Circle Gateway</h2>
               <p className="text-gray-600 mb-8">
-                Create your first smart wallet to get started. You can create up to 5 wallets to manage your finances.
+                Create your first Circle smart wallet to get started. Manage your finances with Circle's Web3 infrastructure.
               </p>
               <Button
                 onClick={handleCreateWallet}
@@ -154,8 +154,8 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Hello, welcome!</h1>
-          <p className="text-gray-600 mt-1">Manage your finances with simplicity</p>
+          <h1 className="text-4xl font-bold text-gray-900">Welcome to Circle Gateway</h1>
+          <p className="text-gray-600 mt-2 text-lg">Manage your finances with Circle's Web3 infrastructure</p>
         </div>
 
         {/* Quick Stats Row */}
@@ -212,39 +212,58 @@ export default function Dashboard() {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Balance Card - Takes 2 columns */}
-          <div className="lg:col-span-2 nubank-gradient rounded-3xl p-8 text-white relative overflow-hidden shadow-xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+          {/* Main Wallet Card - Circle Gateway Design */}
+          <div className="lg:col-span-2 nubank-gradient rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-48 -mt-48"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -ml-32 -mb-32"></div>
+            
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-8">
                 <div>
-                  <p className="text-purple-200 text-sm mb-2">Available Balance</p>
-                  <h2 className="text-5xl font-bold mb-2">${balance.toFixed(2)}</h2>
-                  <div className="flex items-center gap-2">
-                    <p className="text-purple-200 text-sm">USDC on ARC Testnet</p>
-                    <span className="bg-white/20 text-white text-xs px-2 py-1 rounded-full">Stablecoin</span>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+                      <Wallet className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white/90 text-sm font-medium">Circle Smart Wallet</p>
+                      <p className="text-white/70 text-xs">Powered by Circle Gateway</p>
+                    </div>
+                  </div>
+                  <p className="text-white/80 text-sm mb-2">Available Balance</p>
+                  <h2 className="text-6xl font-bold tracking-tight mb-2">${balance.toFixed(2)}</h2>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant="info" size="sm" className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                      USDC
+                    </Badge>
+                    <Badge variant="info" size="sm" className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                      Circle ARC
+                    </Badge>
+                    <Badge variant="success" size="sm" className="bg-green-500/30 text-white border-0 backdrop-blur-sm">
+                      ✓ Active
+                    </Badge>
                   </div>
                 </div>
                 <Link href="/account">
-                  <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm hover:bg-white/20 transition-colors cursor-pointer">
+                  <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm hover:bg-white/20 transition-all cursor-pointer">
                     <Wallet className="h-7 w-7 text-white" />
                   </div>
                 </Link>
               </div>
               
               {walletAddress && (
-                <div className="mb-6">
-                  <p className="text-purple-200 text-sm mb-2">Wallet Address</p>
+                <div className="mb-6 bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+                  <p className="text-white/70 text-xs uppercase tracking-wide mb-2 font-medium">Wallet Address</p>
                   <a 
                     href={`https://testnet.arcscan.app/address/${walletAddress}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl hover:bg-white/20 transition-colors"
+                    className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-2 -m-2 transition-all"
                   >
-                    <p className="font-mono text-sm flex-1">
+                    <p className="font-mono text-sm flex-1 text-white/95">
                       {walletAddress.slice(0, 10)}...{walletAddress.slice(-8)}
                     </p>
-                    <ExternalLink className="h-4 w-4 text-white" />
+                    <ExternalLink className="h-4 w-4 text-white/70" />
                   </a>
                 </div>
               )}
@@ -253,7 +272,7 @@ export default function Dashboard() {
                 <Link href="/account" className="w-full">
                   <Button 
                     variant="ghost"
-                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full rounded-xl py-6"
+                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full rounded-xl py-6 font-semibold text-base"
                   >
                     <Send className="h-5 w-5 mr-2" />
                     Send
@@ -262,7 +281,7 @@ export default function Dashboard() {
                 <Link href="/account" className="w-full">
                   <Button
                     variant="ghost"
-                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full rounded-xl py-6"
+                    className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm w-full rounded-xl py-6 font-semibold text-base"
                   >
                     <ArrowDownLeft className="h-5 w-5 mr-2" />
                     Receive
@@ -382,31 +401,31 @@ export default function Dashboard() {
 
         {/* Info Section */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mb-4">
-              <Shield className="h-6 w-6 text-purple-600" />
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 shadow-md border border-purple-200">
+            <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-4">
+              <Shield className="h-6 w-6 text-white" />
             </div>
-            <h4 className="font-bold text-gray-900 mb-2">ARC Blockchain</h4>
+            <h4 className="font-bold text-gray-900 mb-2">Circle Gateway</h4>
             <p className="text-sm text-gray-600">
-              Powered by Circle's ARC testnet for fast, secure transactions
+              Powered by Circle's Web3 infrastructure on ARC testnet for fast, secure transactions
             </p>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4">
-              <DollarSign className="h-6 w-6 text-green-600" />
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 shadow-md border border-green-200">
+            <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center mb-4">
+              <DollarSign className="h-6 w-6 text-white" />
             </div>
             <h4 className="font-bold text-gray-900 mb-2">USDC Stablecoin</h4>
             <p className="text-sm text-gray-600">
-              Your balance is backed 1:1 by US dollar reserves
+              Your balance is backed 1:1 by US dollar reserves for predictable value
             </p>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
-              <CreditCard className="h-6 w-6 text-blue-600" />
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-md border border-blue-200">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-4">
+              <CreditCard className="h-6 w-6 text-white" />
             </div>
             <h4 className="font-bold text-gray-900 mb-2">Stripe Powered</h4>
             <p className="text-sm text-gray-600">
-              Identity verification and card services by Stripe
+              Identity verification and card services integrated with Stripe
             </p>
           </div>
         </div>
