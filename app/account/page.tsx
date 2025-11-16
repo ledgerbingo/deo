@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Wallet, Send, ArrowDownLeft, ArrowUpRight, Copy, ExternalLink, DollarSign, Clock, CheckCircle, XCircle, Filter, RefreshCw, Plus, Edit2, Trash2 } from 'lucide-react'
 import { Button, Badge, Modal, Input, Navigation } from '@/components/ui'
 import { useWallet } from '@/lib/context/WalletContext'
-import CircleWalletSection from '@/components/wallet/CircleWalletSection'
 
 interface WalletInfo {
   address: string
@@ -320,9 +319,9 @@ export default function AccountPage() {
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mx-auto mb-6">
                 <Wallet className="h-10 w-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Create Your Wallet</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Create Your Circle Wallet</h2>
               <p className="text-gray-600 mb-8">
-                Get started by creating your first smart wallet. You can create up to 5 wallets.
+                Get started with Circle Gateway by creating your first smart wallet. Manage your USDC on Circle's ARC blockchain.
               </p>
               <Button
                 onClick={handleCreateNewWallet}
@@ -348,29 +347,31 @@ export default function AccountPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">ARC Smart Wallet</h1>
-            <p className="text-gray-600 mt-2">Manage your USDC wallet on Circle ARC blockchain</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setShowManageModal(true)}
-              variant="secondary"
-              className="flex items-center gap-2"
-            >
-              <Wallet className="h-4 w-4" />
-              Manage Wallets ({wallets.length}/5)
-            </Button>
-            <Button
-              onClick={handleRefresh}
-              variant="secondary"
-              disabled={isRefreshing}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+        <div className="mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Circle Smart Wallet</h1>
+              <p className="text-gray-600 mt-2">Powered by Circle Gateway on ARC blockchain</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowManageModal(true)}
+                variant="secondary"
+                className="flex items-center gap-2"
+              >
+                <Wallet className="h-4 w-4" />
+                Manage Wallets ({wallets.length}/5)
+              </Button>
+              <Button
+                onClick={handleRefresh}
+                variant="secondary"
+                disabled={isRefreshing}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -380,101 +381,131 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* Balance Card */}
-        <div className={`bg-gradient-to-br ${activeWallet?.color || 'from-blue-600 to-purple-700'} rounded-xl shadow-2xl p-8 text-white mb-8 relative overflow-hidden`}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-          <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <p className="text-white/70 text-sm mb-1">{activeWallet?.name}</p>
-                <p className="text-white/70 text-sm mb-1">USDC Balance</p>
-                {isLoading ? (
-                  <div className="h-12 w-48 bg-white/20 rounded animate-pulse"></div>
-                ) : (
-                  <>
-                    <h2 className="text-5xl font-bold">${walletInfo?.usdcBalance || '0.00'}</h2>
-                    <p className="text-white/70 text-sm mt-1 flex items-center gap-2">
-                      USDC on ARC Testnet
-                      <Badge variant="info" size="sm" className="bg-white/20 text-white border-0">Circle</Badge>
-                    </p>
-                  </>
-                )}
-              </div>
-              <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
-                <Wallet className="h-8 w-8 text-white" />
-              </div>
-            </div>
+        {/* Balance Card - Circle Gateway Design */}
+        <div className="relative mb-8">
+          {/* Main Wallet Card */}
+          <div className={`bg-gradient-to-br ${activeWallet?.color || 'from-blue-600 to-purple-700'} rounded-3xl shadow-2xl p-8 text-white relative overflow-hidden`}>
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-48 -mt-48"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -ml-32 -mb-32"></div>
             
-            <div className="mb-6">
-              <p className="text-white/70 text-sm mb-2">Wallet Address</p>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg">
-                <p className="font-mono text-sm flex-1">
-                  {walletAddress}
-                </p>
-                <button 
-                  onClick={() => copyToClipboard(walletAddress)}
-                  className="text-white hover:text-white/70 transition-colors"
-                  title="Copy address"
-                >
-                  <Copy className="h-4 w-4" />
-                </button>
-                <a 
-                  href={`https://testnet.arcscan.app/address/${walletAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-white/70 transition-colors"
-                  title="View on explorer"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
-
-            {!isLoading && walletInfo && (
-              <div className="mb-6 grid grid-cols-2 gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <p className="text-white/70 text-xs mb-1">Native Balance</p>
-                  <p className="font-semibold">{parseFloat(walletInfo.nativeBalance).toFixed(4)} ETH</p>
+            <div className="relative z-10">
+              {/* Header Section */}
+              <div className="flex justify-between items-start mb-8">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+                      <Wallet className="h-7 w-7 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white/90 text-sm font-medium">{activeWallet?.name}</p>
+                      <p className="text-white/70 text-xs">Circle Gateway Wallet</p>
+                    </div>
+                  </div>
+                  
+                  {isLoading ? (
+                    <div className="h-16 w-64 bg-white/20 rounded-xl animate-pulse"></div>
+                  ) : (
+                    <div>
+                      <p className="text-white/80 text-sm mb-2">Available Balance</p>
+                      <h2 className="text-6xl font-bold tracking-tight mb-2">${walletInfo?.usdcBalance || '0.00'}</h2>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="info" size="sm" className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                          USDC
+                        </Badge>
+                        <Badge variant="info" size="sm" className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                          Circle ARC
+                        </Badge>
+                        <Badge variant="success" size="sm" className="bg-green-500/30 text-white border-0 backdrop-blur-sm">
+                          ✓ Verified
+                        </Badge>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                  <p className="text-white/70 text-xs mb-1">Transactions</p>
-                  <p className="font-semibold">{walletInfo.transactionCount}</p>
+              </div>
+              
+              {/* Wallet Address Section */}
+              <div className="mb-6 bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+                <p className="text-white/70 text-xs uppercase tracking-wide mb-2 font-medium">Wallet Address</p>
+                <div className="flex items-center gap-3">
+                  <p className="font-mono text-sm flex-1 truncate text-white/95">
+                    {walletAddress}
+                  </p>
+                  <button 
+                    onClick={() => copyToClipboard(walletAddress)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                    title="Copy address"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </button>
+                  <a 
+                    href={`https://testnet.arcscan.app/address/${walletAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                    title="View on explorer"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
-            )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button 
-                onClick={handleSendClick}
-                variant="ghost"
-                className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-                disabled={isLoading}
-              >
-                <Send className="h-5 w-5 mr-2" />
-                Send / Withdraw
-              </Button>
-              <Button
-                onClick={() => setShowReceiveModal(true)}
-                variant="ghost"
-                className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-              >
-                <ArrowDownLeft className="h-5 w-5 mr-2" />
-                Receive / Deposit
-              </Button>
+              {/* Stats Grid */}
+              {!isLoading && walletInfo && (
+                <div className="mb-6 grid grid-cols-3 gap-3">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                    <p className="text-white/70 text-xs mb-1 uppercase tracking-wide">Native Balance</p>
+                    <p className="font-bold text-lg">{parseFloat(walletInfo.nativeBalance).toFixed(4)} ETH</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                    <p className="text-white/70 text-xs mb-1 uppercase tracking-wide">Transactions</p>
+                    <p className="font-bold text-lg">{walletInfo.transactionCount}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                    <p className="text-white/70 text-xs mb-1 uppercase tracking-wide">Network</p>
+                    <p className="font-bold text-lg">ARC</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button 
+                  onClick={handleSendClick}
+                  variant="ghost"
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm py-6 rounded-xl font-semibold text-base"
+                  disabled={isLoading}
+                >
+                  <Send className="h-5 w-5 mr-2" />
+                  Send
+                </Button>
+                <Button
+                  onClick={() => setShowReceiveModal(true)}
+                  variant="ghost"
+                  className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm py-6 rounded-xl font-semibold text-base"
+                >
+                  <ArrowDownLeft className="h-5 w-5 mr-2" />
+                  Receive
+                </Button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Transaction History */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">Transaction History</h3>
-            <div className="flex items-center gap-2">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Transaction History</h3>
+              <p className="text-sm text-gray-600 mt-1">All your wallet transactions on Circle ARC</p>
+            </div>
+            <div className="flex items-center gap-3">
               <Filter className="h-5 w-5 text-gray-400" />
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as any)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-purple-600 focus:border-transparent bg-white"
               >
                 <option value="all">All Transactions</option>
                 <option value="send">Sent</option>
@@ -484,31 +515,31 @@ export default function AccountPage() {
           </div>
 
           {isLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="text-gray-500 mt-2">Loading transactions from blockchain...</p>
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600"></div>
+              <p className="text-gray-500 mt-3 font-medium">Loading transactions from blockchain...</p>
             </div>
           ) : filteredTransactions.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredTransactions.map((tx) => (
                 <div 
                   key={tx.hash} 
-                  className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 hover:bg-gray-50 -mx-4 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                  className="flex items-center justify-between border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 hover:border-gray-200 transition-all cursor-pointer"
                   onClick={() => handleViewReceipt(tx)}
                 >
                   <div className="flex items-center flex-1">
-                    <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
-                      tx.type === 'receive' ? 'bg-green-100' : 'bg-blue-100'
+                    <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${
+                      tx.type === 'receive' ? 'bg-green-100' : 'bg-purple-100'
                     }`}>
                       {tx.type === 'receive' ? (
-                        <ArrowDownLeft className="h-6 w-6 text-green-600" />
+                        <ArrowDownLeft className="h-7 w-7 text-green-600" />
                       ) : (
-                        <ArrowUpRight className="h-6 w-6 text-blue-600" />
+                        <ArrowUpRight className="h-7 w-7 text-purple-600" />
                       )}
                     </div>
                     <div className="ml-4 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-gray-900 text-lg">
                           {tx.type === 'receive' ? 'Received' : 'Sent'}
                         </p>
                         {getStatusIcon(tx.status)}
@@ -516,57 +547,66 @@ export default function AccountPage() {
                       <p className="text-sm text-gray-500 font-mono">
                         {tx.type === 'receive' ? `From: ${tx.from.slice(0, 6)}...${tx.from.slice(-4)}` : `To: ${tx.to.slice(0, 6)}...${tx.to.slice(-4)}`}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 mt-1">
                         {new Date(tx.timestamp * 1000).toLocaleString()}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`font-semibold text-lg ${
+                    <p className={`font-bold text-xl mb-1 ${
                       tx.type === 'receive' ? 'text-green-600' : 'text-gray-900'
                     }`}>
                       {tx.type === 'receive' ? '+' : '-'}{tx.amount}
                     </p>
-                    <p className="text-sm text-gray-500">{tx.currency}</p>
+                    <p className="text-sm text-gray-500 font-medium">{tx.currency}</p>
                     {tx.fee && parseFloat(tx.fee) > 0 && (
-                      <p className="text-xs text-gray-400">Fee: {parseFloat(tx.fee).toFixed(6)} ETH</p>
+                      <p className="text-xs text-gray-400 mt-1">Fee: {parseFloat(tx.fee).toFixed(6)} ETH</p>
                     )}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No transactions found</p>
+            <div className="text-center py-16">
+              <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <ArrowUpRight className="h-10 w-10 text-gray-400" />
+              </div>
+              <p className="text-gray-600 font-medium text-lg">No transactions yet</p>
               <p className="text-sm text-gray-400 mt-2">Transactions will appear here when you send or receive USDC</p>
             </div>
           )}
         </div>
 
         {/* Info Section */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-50 rounded-xl p-6">
-            <h4 className="font-semibold text-gray-900 mb-2">Circle ARC Blockchain</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-4">
+              <DollarSign className="h-6 w-6 text-white" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">Circle Gateway</h4>
             <p className="text-sm text-gray-600">
-              All transactions are processed on Circle's ARC testnet for fast, secure, and low-cost transfers.
+              Powered by Circle's Web3 infrastructure for seamless blockchain interactions and USDC transfers.
             </p>
           </div>
-          <div className="bg-green-50 rounded-xl p-6">
-            <h4 className="font-semibold text-gray-900 mb-2">USDC Stablecoin</h4>
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200">
+            <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center mb-4">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">USDC Stablecoin</h4>
             <p className="text-sm text-gray-600">
-              Your balance is in USDC, a stablecoin backed 1:1 by US dollar reserves, ensuring stable value.
+              Your balance is in USDC, backed 1:1 by US dollar reserves for stable, predictable value.
             </p>
           </div>
-          <div className="bg-purple-50 rounded-xl p-6">
-            <h4 className="font-semibold text-gray-900 mb-2">Smart Wallet Features</h4>
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border border-purple-200">
+            <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-4">
+              <Wallet className="h-6 w-6 text-white" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-2">ARC Blockchain</h4>
             <p className="text-sm text-gray-600">
-              Enjoy enhanced security, transaction batching, and seamless blockchain interactions.
+              Fast, secure transactions on Circle's ARC testnet with enhanced security and low fees.
             </p>
           </div>
         </div>
-
-        {/* Circle Wallet Section - Added separately below existing wallet */}
-        <CircleWalletSection />
       </main>
 
       {/* Receive Modal */}

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { signIn } from 'next-auth/react'
-import { DollarSign, Mail, Lock, Chrome, Github, Eye, EyeOff } from 'lucide-react'
+import { DollarSign, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { Button, Input, Alert } from '@/components/ui'
 
 export default function AuthPage() {
@@ -26,42 +25,6 @@ export default function AuthPage() {
       console.log('Auth attempt:', { email, isLogin })
       alert(`${isLogin ? 'Login' : 'Signup'} successful! Redirecting to dashboard...`)
     }, 1500)
-  }
-
-  const handleGoogleAuth = async () => {
-    setLoading(true)
-    setError('')
-    
-    try {
-      // Use NextAuth to sign in with Google
-      const result = await signIn('google', {
-        callbackUrl: '/account',
-        redirect: true,
-      })
-      
-      if (result?.error) {
-        setError('Failed to sign in with Google')
-        setLoading(false)
-      }
-    } catch (err) {
-      console.error('Google auth error:', err)
-      setError('An error occurred during authentication')
-      setLoading(false)
-    }
-  }
-
-  const handleSocialAuth = (provider: string) => {
-    if (provider === 'Google') {
-      handleGoogleAuth()
-    } else {
-      setLoading(true)
-      // Other social providers not yet implemented
-      setTimeout(() => {
-        setLoading(false)
-        console.log(`Social auth with ${provider}`)
-        alert(`${provider} authentication coming soon!`)
-      }, 1000)
-    }
   }
 
   return (
@@ -92,39 +55,6 @@ export default function AuthPage() {
               {error}
             </Alert>
           )}
-
-          {/* Social Login */}
-          <div className="space-y-3 mb-6">
-            <Button
-              onClick={() => handleSocialAuth('Google')}
-              variant="outline"
-              fullWidth
-              loading={loading}
-              className="border-gray-300 hover:border-blue-600"
-            >
-              <Chrome className="h-5 w-5" />
-              Continue with Google
-            </Button>
-            <Button
-              onClick={() => handleSocialAuth('GitHub')}
-              variant="outline"
-              fullWidth
-              loading={loading}
-              className="border-gray-300 hover:border-blue-600"
-            >
-              <Github className="h-5 w-5" />
-              Continue with GitHub
-            </Button>
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with email</span>
-            </div>
-          </div>
 
           {/* Email/Password Form */}
           <form onSubmit={handleEmailAuth} className="space-y-4">
